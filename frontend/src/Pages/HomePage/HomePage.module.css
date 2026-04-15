@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --gold: #d4a350;
+    --gold-light: #e8b960;
+    --cream: #ebe1cd;
+    --cream-dim: rgba(235, 225, 205, 0.6);
+    --bg: #08080c;
+    --bg-card: #0f0f17;
+    --border: rgba(255, 255, 255, 0.07);
+}
+
+.page {
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--cream);
+    font-family: 'Karla', sans-serif;
+}
+
+/* ─── Hero ─── */
+.hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    max-height: 800px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.heroBackground {
+    position: absolute;
+    inset: 0;
+}
+
+.heroBgImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: saturate(0.6) brightness(0.45);
+}
+
+.heroBgFallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a0d20, #0d1520, #201510);
+}
+
+.heroGradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        var(--bg) 0%,
+        rgba(8, 8, 12, 0.7) 40%,
+        rgba(8, 8, 12, 0.1) 100%
+    );
+}
+
+.heroContent {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+    width: 100%;
+}
+
+.heroLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.heroDot {
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.heroTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(42px, 7vw, 80px);
+    line-height: 1.0;
+    color: var(--cream);
+    margin: 0 0 16px;
+    max-width: 700px;
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+.heroMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--cream-dim);
+    margin-bottom: 16px;
+}
+
+.heroRating {
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.heroDivider {
+    opacity: 0.3;
+}
+
+.heroDescription {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(235, 225, 205, 0.55);
+    max-width: 520px;
+    margin: 0 0 32px;
+}
+
+.heroActions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.heroRentBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    border: none;
+    border-radius: 12px;
+    color: #08080c;
+    font-family: 'Karla', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 26px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.2px;
+}
+
+.heroRentBtn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(212, 163, 80, 0.35);
+}
+
+.heroDetailsBtn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    color: var(--cream);
+    font-family: 'Karla', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 26px;
+    cursor: pointer;
+    transition: all 0.25s;
+    backdrop-filter: blur(10px);
+}
+
+.heroDetailsBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Toast ─── */
+.toast {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    background: rgba(15, 15, 23, 0.95);
+    border: 1px solid rgba(212, 163, 80, 0.4);
+    border-radius: 12px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cream);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    white-space: nowrap;
+}
+
+.toastIcon {
+    width: 22px;
+    height: 22px;
+    background: rgba(100, 200, 100, 0.15);
+    border: 1px solid rgba(100, 200, 100, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #6dc96d;
+    flex-shrink: 0;
+}
+
+/* ─── Catalog ─── */
+.catalog {
+    padding: 60px 0 80px;
+}
+
+.catalogInner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.catalogHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.catalogTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--cream);
+    margin: 0;
+}
+
+.searchWrapper {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(235, 225, 205, 0.3);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px 10px 40px;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    box-sizing: border-box;
+}
+
+.searchInput::placeholder {
+    color: rgba(235, 225, 205, 0.25);
+}
+
+.searchInput:focus {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 163, 80, 0.3);
+}
+
+.genreFilters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+}
+
+.genreFilter {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: rgba(235, 225, 205, 0.5);
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.genreFilter:hover {
+    background: rgba(212, 163, 80, 0.08);
+    border-color: rgba(212, 163, 80, 0.2);
+    color: rgba(235, 225, 205, 0.8);
+}
+
+.genreFilterActive {
+    background: rgba(212, 163, 80, 0.12);
+    border-color: rgba(212, 163, 80, 0.4);
+    color: var(--gold);
+}
+
+.moviesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(235, 225, 205, 0.3);
+}
+
+.emptyIcon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+@media (max-width: 768px) {
+    .heroContent {
+        padding: 0 20px 60px;
+    }
+
+    .catalogInner {
+        padding: 0 20px;
+    }
+
+    .catalogHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .searchWrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .moviesGrid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+    }
+}

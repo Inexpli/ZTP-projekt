@@ -1,0 +1,398 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+
+.page {
+    background: #08080c;
+    min-height: 100vh;
+    color: #ebe1cd;
+    font-family: 'Karla', sans-serif;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 120px 40px 80px;
+}
+
+.header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    color: #ebe1cd;
+    margin: 0 0 6px;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: rgba(235, 225, 205, 0.4);
+    margin: 0;
+}
+
+.browseBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 163, 80, 0.1);
+    border: 1px solid rgba(212, 163, 80, 0.25);
+    border-radius: 10px;
+    color: #d4a350;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.browseBtn:hover {
+    background: rgba(212, 163, 80, 0.18);
+    border-color: rgba(212, 163, 80, 0.5);
+}
+
+/* Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+}
+
+.statCard {
+    background: #0f0f17;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.statCardAccent {
+    background: rgba(212, 163, 80, 0.06);
+    border-color: rgba(212, 163, 80, 0.2);
+}
+
+.statValue {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: #ebe1cd;
+}
+
+.statCardAccent .statValue {
+    color: #d4a350;
+}
+
+.statLabel {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: rgba(235, 225, 205, 0.4);
+    text-transform: uppercase;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 4px;
+    width: fit-content;
+}
+
+.tab {
+    background: none;
+    border: none;
+    border-radius: 7px;
+    color: rgba(235, 225, 205, 0.45);
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: rgba(235, 225, 205, 0.7);
+}
+
+.tabActive {
+    background: rgba(212, 163, 80, 0.12);
+    color: #d4a350;
+}
+
+.tabBadge {
+    background: #d4a350;
+    color: #08080c;
+    font-size: 11px;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Empty */
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.emptyIcon {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.emptyText {
+    color: rgba(235, 225, 205, 0.35);
+    font-size: 16px;
+    margin: 0 0 24px;
+}
+
+.emptyBtn {
+    background: rgba(212, 163, 80, 0.1);
+    border: 1px solid rgba(212, 163, 80, 0.3);
+    border-radius: 10px;
+    color: #d4a350;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emptyBtn:hover {
+    background: rgba(212, 163, 80, 0.18);
+}
+
+/* Rental Cards */
+.rentalsList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rentalCard {
+    background: #0f0f17;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 18px;
+    align-items: center;
+    transition: border-color 0.2s;
+}
+
+.rentalCard:hover {
+    border-color: rgba(212, 163, 80, 0.2);
+}
+
+.rentalCard.overdue {
+    border-color: rgba(200, 70, 70, 0.3);
+    background: rgba(200, 70, 70, 0.04);
+}
+
+.rentalPoster {
+    width: 72px;
+    height: 108px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #1a1a24;
+}
+
+.posterImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.posterImgFallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    opacity: 0.4;
+}
+
+.rentalInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.rentalGenres {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.rentalGenre {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(212, 163, 80, 0.6);
+    background: rgba(212, 163, 80, 0.07);
+    border: 1px solid rgba(212, 163, 80, 0.12);
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+
+.rentalTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: #ebe1cd;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rentalMeta {
+    font-size: 12px;
+    color: rgba(235, 225, 205, 0.35);
+    margin: 0 0 12px;
+}
+
+.rentalDates {
+    display: flex;
+    gap: 24px;
+}
+
+.rentalDate {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dateLabel {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(235, 225, 205, 0.3);
+}
+
+.dateValue {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(235, 225, 205, 0.6);
+}
+
+.overdueText { color: #c84646; }
+.dueSoonText { color: #d4a350; }
+
+.rentalRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.rentalCost {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.costAmount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #d4a350;
+}
+
+.costDays {
+    font-size: 11px;
+    color: rgba(235, 225, 205, 0.3);
+}
+
+.returnedBadge {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(100, 200, 100, 0.7);
+    background: rgba(100, 200, 100, 0.08);
+    border: 1px solid rgba(100, 200, 100, 0.2);
+    border-radius: 6px;
+    padding: 5px 12px;
+}
+
+.overdueBadge {
+    font-size: 12px;
+    font-weight: 600;
+    color: #c84646;
+    background: rgba(200, 70, 70, 0.1);
+    border: 1px solid rgba(200, 70, 70, 0.25);
+    border-radius: 6px;
+    padding: 5px 12px;
+    text-align: center;
+}
+
+.rentalActions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.dueSoonBadge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #d4a350;
+    background: rgba(212, 163, 80, 0.1);
+    border: 1px solid rgba(212, 163, 80, 0.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+
+.returnBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(235, 225, 205, 0.6);
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.returnBtn:hover {
+    background: rgba(212, 163, 80, 0.1);
+    border-color: rgba(212, 163, 80, 0.3);
+    color: #d4a350;
+}
+
+@media (max-width: 640px) {
+    .container { padding: 100px 20px 60px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stats > :last-child { grid-column: 1 / -1; }
+    .rentalCard { grid-template-columns: 60px 1fr; }
+    .rentalRight { display: none; }
+    .rentalDates { flex-direction: column; gap: 8px; }
+}

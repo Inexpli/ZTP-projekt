@@ -1,0 +1,223 @@
+.card {
+    background: #0f0f17;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+
+.card:hover {
+    border-color: rgba(212, 163, 80, 0.25);
+}
+
+.posterWrapper {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: #1a1a24;
+}
+
+.poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+.card:hover .poster {
+    transform: scale(1.05);
+}
+
+.posterFallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+}
+
+.posterFallbackIcon {
+    font-size: 40px;
+    opacity: 0.5;
+}
+
+.posterFallbackTitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: rgba(235, 225, 205, 0.5);
+    text-align: center;
+    line-height: 1.4;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 12, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.card:hover .overlay {
+    opacity: 1;
+}
+
+.detailsBtn {
+    background: rgba(212, 163, 80, 0.15);
+    border: 1px solid rgba(212, 163, 80, 0.5);
+    color: #d4a350;
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.detailsBtn:hover {
+    background: rgba(212, 163, 80, 0.3);
+    border-color: #d4a350;
+}
+
+.ratingBadge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(8, 8, 12, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 163, 80, 0.3);
+    border-radius: 8px;
+    padding: 4px 9px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #d4a350;
+}
+
+.ratingIcon {
+    font-size: 11px;
+}
+
+.unavailableBadge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(180, 50, 50, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+.info {
+    padding: 14px 16px 16px;
+}
+
+.genres {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.genre {
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(212, 163, 80, 0.7);
+    background: rgba(212, 163, 80, 0.08);
+    border: 1px solid rgba(212, 163, 80, 0.15);
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+.title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: #ebe1cd;
+    margin: 0 0 5px;
+    line-height: 1.3;
+    transition: color 0.2s;
+}
+
+.title:hover {
+    color: #d4a350;
+}
+
+.meta {
+    font-family: 'Karla', sans-serif;
+    font-size: 12px;
+    color: rgba(235, 225, 205, 0.4);
+    margin: 0 0 14px;
+    line-height: 1.4;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.price {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.priceAmount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #d4a350;
+}
+
+.priceUnit {
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    color: rgba(235, 225, 205, 0.4);
+}
+
+.rentBtn {
+    background: #d4a350;
+    border: none;
+    border-radius: 8px;
+    color: #08080c;
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rentBtn:hover:not(:disabled) {
+    background: #e8b960;
+    transform: translateY(-1px);
+}
+
+.rentBtnDisabled {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.25);
+    cursor: not-allowed;
+}

@@ -1,0 +1,258 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 4, 8, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 201;
+    background: #0f0f17;
+    border: 1px solid rgba(212, 163, 80, 0.2);
+    border-radius: 20px;
+    width: min(780px, 95vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 163, 80, 0.2) transparent;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(235, 225, 205, 0.5);
+    transition: all 0.2s;
+    z-index: 1;
+}
+
+.closeBtn:hover {
+    background: rgba(212, 163, 80, 0.1);
+    border-color: rgba(212, 163, 80, 0.3);
+    color: #d4a350;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+}
+
+.posterSection {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px 0 0 20px;
+}
+
+.poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.posterFallback {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background: #1a1a24;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    opacity: 0.4;
+}
+
+.details {
+    padding: 32px 28px 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+.genres {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.genre {
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(212, 163, 80, 0.7);
+    background: rgba(212, 163, 80, 0.08);
+    border: 1px solid rgba(212, 163, 80, 0.15);
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+.title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: #ebe1cd;
+    margin: 0 0 6px;
+    line-height: 1.2;
+    padding-right: 40px;
+}
+
+.meta {
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    color: rgba(235, 225, 205, 0.4);
+    margin: 0 0 14px;
+}
+
+.description {
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(235, 225, 205, 0.6);
+    margin: 0;
+}
+
+.divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 20px 0;
+}
+
+.rentalConfig {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.daysLabel {
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(235, 225, 205, 0.7);
+}
+
+.daysControl {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.dayBtn {
+    background: none;
+    border: none;
+    color: #d4a350;
+    font-size: 20px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    font-family: 'Karla', sans-serif;
+}
+
+.dayBtn:hover {
+    background: rgba(212, 163, 80, 0.1);
+}
+
+.daysValue {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #ebe1cd;
+    min-width: 36px;
+    text-align: center;
+}
+
+.summary {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    color: rgba(235, 225, 205, 0.5);
+}
+
+.summaryTotal {
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(235, 225, 205, 0.8);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.totalPrice {
+    color: #d4a350;
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+}
+
+.confirmBtn {
+    background: #d4a350;
+    border: none;
+    border-radius: 12px;
+    color: #08080c;
+    font-family: 'Karla', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 14px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: all 0.25s;
+}
+
+.confirmBtn:hover {
+    background: #e8b960;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 163, 80, 0.3);
+}
+
+@media (max-width: 600px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    .posterSection {
+        border-radius: 20px 20px 0 0;
+        max-height: 240px;
+    }
+    .details {
+        padding: 20px 18px 22px;
+    }
+    .title {
+        font-size: 22px;
+    }
+}
