@@ -13,10 +13,10 @@ def create_app():
     app.logger.setLevel(logging.DEBUG)
 
     # ==================== KONFIGURACJA ====================
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-        "DATABASE_URL",
-        "postgresql+psycopg2://postgres:ZAQ!2wsx@localhost:5432/ztp_projekt",
-    )
+    db_password = os.environ.get("PASSWORD", "ZAQ!2wsx")
+    
+    # Składamy pełny adres używając f-stringa (zwróć uwagę na literkę 'f' przed stringiem)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/ztp_projekt?client_encoding=utf8"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get(
         "JWT_SECRET_KEY", "super-secret-key-zmien-to-w-produkcji-2026"
