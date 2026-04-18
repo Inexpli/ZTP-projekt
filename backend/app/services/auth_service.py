@@ -22,12 +22,9 @@ def register_user(data):
     if user_repo.get_by_email(data["email"]):
         raise ValueError("Email jest już używany")
 
+    # Przekazujemy tylko to, co model User jest w stanie przyjąć
     user = user_repo.create_user(
-        username=data["username"],
-        email=data["email"],
-        password=data["password"],
-        first_name=data.get("first_name"),
-        last_name=data.get("last_name"),
+        username=data["username"], email=data["email"], password=data["password"]
     )
 
     return user.serialize()

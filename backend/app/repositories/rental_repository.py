@@ -2,6 +2,7 @@ from app.extensions import db
 from app.models.rental import Rental
 from datetime import datetime, timedelta
 from sqlalchemy import and_
+from sqlalchemy.orm import joinedload
 
 
 class RentalRepository:
@@ -18,24 +19,27 @@ class RentalRepository:
         return rental
 
     def get_user_active_rentals(self, user_id):
-        """Zwraca aktualne (nieoddane) wypożyczenia użytkownika"""
+        """Zwraca aktualne (nieoddane) wypożyczenia użytkownika wraz z danymi filmów"""
         return (
             self.session.query(Rental)
+            .options(joinedload(Rental.movie))  # Dociąga dane filmu (title, poster_url)
             .filter(Rental.user_id == user_id, Rental.return_date == None)
             .order_by(Rental.due_date.asc())
             .all()
         )
 
     def get_user_rental_history(self, user_id):
-        """Zwraca całą historię wypożyczeń użytkownika"""
+        """Zwraca całą historię wypożyczeń użytkownika wraz z danymi filmów"""
         return (
             self.session.query(Rental)
+            .options(joinedload(Rental.movie))  # Dociąga dane filmu (title, poster_url)
             .filter(Rental.user_id == user_id)
             .order_by(Rental.rental_date.desc())
             .all()
         )
 
     def get_rental_by_id(self, rental_id):
+        """Pobiera konkretne wypożyczenie po ID"""
         return self.session.query(Rental).get(rental_id)
 
     def return_rental(self, rental_id):

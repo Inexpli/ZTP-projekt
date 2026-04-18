@@ -21,10 +21,21 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.environ.get(
         "JWT_SECRET_KEY", "super-secret-key-zmien-to-w-produkcji-2026"
     )
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400  # 24 godziny
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400
 
-    # CORS
-    CORS(app, resources={r"/api/*": {"origins": "*", "supports_credentials": True}})
+    # ==================== CORS ====================
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": "*",
+                "supports_credentials": True,
+                "allow_headers": ["Content-Type", "Authorization"],
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            }
+        },
+        intercept_exceptions=False,
+    )
 
     # ==================== INICJALIZACJA ROZSZERZEŃ ====================
     from app.extensions import db, migrate, jwt
@@ -32,6 +43,20 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+
+    # ==================== AUTOMATYCZNE TWORZENIE TABEL ====================
+    # Importujemy modele tutaj, aby db.create_all() wiedziało co budować
+    from app.models.user import User
+    from app.models.rental import Rental
+
+    # Jeśli masz inne modele (np. Movie, Rental), zaimportuj je tutaj tak samo:
+    # from app.models.movie import Movie
+
+    with app.app_context():
+        # UWAGA: create_all() nie zaktualizuje istniejącej tabeli (nie doda kolumn).
+        # Jeśli nadal masz błąd "UndefinedColumn", musisz najpierw zrobić DROP TABLE users w pgAdminie!
+        db.create_all()
+        print("🛠️  Struktura bazy danych została zweryfikowana/stworzona.")
 
     # ==================== REJESTRACJA BLUEPRINTÓW ====================
     from app.routes.auth import auth_bp
@@ -69,7 +94,8 @@ def create_app():
 
     # ==================== KOMUNIKAT STARTOWY ====================
     print("✅ Aplikacja uruchomiona – dostępne endpointy:")
-    print("   → /api/auth")
+    print("   → /api/auth/register")
+    print("   → /api/auth/login")
     print("   → /api/movies")
     print("   → /api/rentals")
 
