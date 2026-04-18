@@ -10,11 +10,11 @@ from app.services.auth_service import (
 auth_bp = Blueprint("auth", __name__)
 
 
-# Rejestracja
 @auth_bp.route("/register", methods=["POST"])
 def register():
     try:
         data = request.get_json()
+        print(f"DEBUG: Otrzymane dane: {data}")  # Zobaczymy co przesyła React
         user_data = register_user(data)
         return (
             jsonify(
@@ -25,7 +25,13 @@ def register():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": "Błąd podczas rejestracji"}), 500
+        # KLUCZOWE: Wypisujemy błąd w konsoli serwera!
+        import traceback
+
+        print("---------- BŁĄD SERWERA ----------")
+        traceback.print_exc()
+        print("----------------------------------")
+        return jsonify({"error": str(e), "details": "Sprawdź konsolę serwera"}), 500
 
 
 # Logowanie

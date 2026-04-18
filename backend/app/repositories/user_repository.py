@@ -15,10 +15,9 @@ class UserRepository:
     def get_by_email(self, email):
         return self.session.query(User).filter_by(email=email).first()
 
-    def create_user(self, username, email, password, first_name=None, last_name=None):
-        user = User(
-            username=username, email=email, first_name=first_name, last_name=last_name
-        )
+    # USUNIĘTO: first_name i last_name z argumentów i konstruktora
+    def create_user(self, username, email, password):
+        user = User(username=username, email=email)
         user.set_password(password)
 
         self.session.add(user)
@@ -30,12 +29,11 @@ class UserRepository:
         if not user:
             return None
 
-        if "first_name" in data:
-            user.first_name = data["first_name"]
-        if "last_name" in data:
-            user.last_name = data["last_name"]
+        # USUNIĘTO: aktualizację first_name i last_name
         if "email" in data:
             user.email = data["email"]
+        if "username" in data:
+            user.username = data["username"]
 
         self.session.commit()
         return user

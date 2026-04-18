@@ -1,7 +1,6 @@
 from app.extensions import db
 from datetime import datetime
 
-
 class Movie(db.Model):
     __tablename__ = "movies"
 
@@ -11,6 +10,7 @@ class Movie(db.Model):
     release_date = db.Column(db.Date, nullable=False)
     duration_minutes = db.Column(db.Integer)
     country = db.Column(db.String(100))
+    original_language = db.Column(db.String(50))
     poster_url = db.Column(db.String(500))
     trailer_url = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -25,6 +25,7 @@ class Movie(db.Model):
             ),
             "duration_minutes": self.duration_minutes,
             "country": self.country,
+            "original_language": self.original_language,
             "poster_url": self.poster_url,
             "trailer_url": self.trailer_url,
             "created_at": (
@@ -32,5 +33,5 @@ class Movie(db.Model):
             ),
         }
 
-    def __repr__(self):
+    def repr(self):
         return f"<Movie {self.movie_id}: {self.title}>"

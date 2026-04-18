@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Movie } from '../../types';
+import { Movie } from '../../rental-v2/types/index';
 import styles from './MovieCard.module.css';
 
 interface MovieCardProps {
@@ -10,80 +10,82 @@ interface MovieCardProps {
     index?: number;
 }
 
+const getReleaseYear = (release_date: string): string => {
+    if (!release_date) return '';
+    return release_date.split('-')[0];
+};
+
+const formatDuration = (minutes?: number): string => {
+    if (!minutes) return '';
+    return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+};
+
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index = 0 }) => {
     const [imgError, setImgError] = useState(false);
 
-    const fallbackColors = ['#1a1020', '#0d1a20', '#1a1a10', '#0d1520'];
-    const fallbackColor = fallbackColors[movie.id % fallbackColors.length];
-
     return (
         <motion.div
-            className={styles.card}
+            className={`${styles.card} ${!movie.available ? styles.cardUnavailable : ''}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.07, ease: 'easeOut' }}
-            whileHover={{ y: -6 }}
+            transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
+            whileHover={{ y: -5 }}
         >
             <div className={styles.posterWrapper} onClick={() => onDetails(movie)}>
-                {!imgError ? (
+                {movie.poster_url && !imgError ? (
                     <img
-                        src={movie.posterUrl}
+                        src={movie.poster_url}
                         alt={movie.title}
                         className={styles.poster}
                         onError={() => setImgError(true)}
                     />
                 ) : (
-                    <div className={styles.posterFallback} style={{ background: fallbackColor }}>
-                        <span className={styles.posterFallbackIcon}>🎬</span>
+                    <div className={styles.posterFallback}>
+                        <span className={styles.posterIcon}>🎬</span>
                         <span className={styles.posterFallbackTitle}>{movie.title}</span>
                     </div>
                 )}
 
                 <div className={styles.overlay}>
-                    <button className={styles.detailsBtn} onClick={(e) => { e.stopPropagation(); onDetails(movie); }}>
+                    <button
+                        className={styles.detailsBtn}
+                        onClick={e => { e.stopPropagation(); onDetails(movie); }}
+                    >
                         Szczegóły
                     </button>
-                </div>
-
-                <div className={styles.ratingBadge}>
-                    <span className={styles.ratingIcon}>★</span>
-                    <span>{movie.rating.toFixed(1)}</span>
                 </div>
 
                 {!movie.available && (
                     <div className={styles.unavailableBadge}>Niedostępny</div>
                 )}
+
+                {movie.country && (
+                    <div className={styles.countryBadge}>{movie.country}</div>
+                )}
             </div>
 
             <div className={styles.info}>
-                <div className={styles.genres}>
-                    {movie.genre.slice(0, 2).map(g => (
-                        <span key={g} className={styles.genre}>{g}</span>
-                    ))}
-                </div>
-
                 <h3 className={styles.title} onClick={() => onDetails(movie)}>
                     {movie.title}
                 </h3>
 
                 <p className={styles.meta}>
-                    {movie.year} · {Math.floor(movie.duration / 60)}h {movie.duration % 60}m · {movie.director}
+                    {[getReleaseYear(movie.release_date), formatDuration(movie.duration_minutes)]
+                        .filter(Boolean)
+                        .join(' · ')}
                 </p>
 
-                <div className={styles.footer}>
-                    <div className={styles.price}>
-                        <span className={styles.priceAmount}>{movie.pricePerDay.toFixed(2)} zł</span>
-                        <span className={styles.priceUnit}> / dzień</span>
-                    </div>
+                {movie.description && (
+                    <p className={styles.desc}>{movie.description}</p>
+                )}
 
-                    <button
-                        className={`${styles.rentBtn} ${!movie.available ? styles.rentBtnDisabled : ''}`}
-                        onClick={() => movie.available && onRent(movie)}
-                        disabled={!movie.available}
-                    >
-                        {movie.available ? 'Wypożycz' : 'Zajęty'}
-                    </button>
-                </div>
+                <button
+                    className={`${styles.rentBtn} ${!movie.available ? styles.rentBtnDisabled : ''}`}
+                    onClick={() => movie.available !== false && onRent(movie)}
+                    disabled={movie.available === false}
+                >
+                    {movie.available === false ? 'Niedostępny' : 'Wypożycz — 14 dni'}
+                </button>
             </div>
         </motion.div>
     );

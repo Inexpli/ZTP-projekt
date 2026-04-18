@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
@@ -11,13 +12,20 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, logout } = useAuth();
     const [scrolled, setScrolled] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 30);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <motion.nav
@@ -48,8 +56,9 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                 </div>
 
                 <div className={styles.actions}>
-                    <button className={styles.cartButton} onClick={onCartClick}>
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    {/* Ikona koszyka — liczba aktywnych wypożyczeń */}
+                    <button className={styles.iconBtn} onClick={onCartClick} title="Moje wypożyczenia">
+                        <svg width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                             <line x1="3" y1="6" x2="21" y2="6" />
                             <path d="M16 10a4 4 0 01-8 0" />
@@ -66,12 +75,49 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                         )}
                     </button>
 
-                    <button className={styles.profileButton} onClick={() => navigate('/profile')}>
-                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </button>
+                    {/* Menu użytkownika */}
+                    <div className={styles.userMenu}>
+                        <button
+                            className={styles.iconBtn}
+                            onClick={() => setMenuOpen(v => !v)}
+                            title={user?.username ?? 'Profil'}
+                        >
+                            <svg width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
+
+                        {menuOpen && (
+                            <motion.div
+                                className={styles.dropdown}
+                                initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {user && (
+                                    <div className={styles.dropdownUser}>
+                                        <span className={styles.dropdownUsername}>{user.username}</span>
+                                        <span className={styles.dropdownEmail}>{user.email}</span>
+                                    </div>
+                                )}
+                                <div className={styles.dropdownDivider} />
+                                <button
+                                    className={styles.dropdownItem}
+                                    onClick={() => { setMenuOpen(false); navigate('/rentals'); }}
+                                >
+                                    Moje wypożyczenia
+                                </button>
+                                <button
+                                    className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
+                                    onClick={handleLogout}
+                                >
+                                    Wyloguj się
+                                </button>
+                            </motion.div>
+                        )}
+                    </div>
                 </div>
             </div>
         </motion.nav>
