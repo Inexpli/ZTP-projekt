@@ -48,3 +48,11 @@ Aplikacja została zaprojektowana w oparciu o architekturę warstwową, co zapew
 pip install -r requirements.txt
 # Uruchomienie aplikacji
 python run.py
+```
+### Frontend:
+```bash
+# Instalacja paczek
+npm install
+# Start aplikacji
+npm start
+```
