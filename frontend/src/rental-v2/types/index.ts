@@ -1,5 +1,3 @@
-// ─── types/index.ts ─────────────────────────────────────────────────────────
-
 // ─── User ───────────────────────────────────────────────────────────────────
 export interface User {
     user_id: number;
@@ -11,28 +9,52 @@ export interface User {
     created_at?: string;
 }
 
+// ─── Podrzędne modele (Relacje) ─────────────────────────────────────────────
+export interface Genre {
+    id: number;
+    name: string;
+}
+
+export interface Actor {
+    id: number;
+    name: string;
+    role?: string;
+    photo_url?: string;
+    biography?: string;
+    birth_date?: string;
+    birth_place?: string;
+    gender?: string;
+}
+
+export interface Director {
+    id: number;
+    name: string;
+    photo_url?: string;
+    biography?: string;
+    birth_date?: string;
+    birth_place?: string;
+    gender?: string;
+}
+
 // ─── Movie ──────────────────────────────────────────────────────────────────
-// Pola zgodne z Movie.serialize() z backendu + przydatne pola dodatkowe
 export interface Movie {
-    movie_id: number;                    // główny identyfikator z bazy
+    movie_id: number;
     title: string;
     description?: string;
-    release_date: string;                // "YYYY-MM-DD"
+    release_date?: string;
     duration_minutes?: number;
     country?: string;
+    original_language?: string;
     poster_url?: string;
     trailer_url?: string;
     created_at?: string;
+    available?: boolean;
 
-    // Pola dodatkowe używane w mockach i aplikacji frontendowej
-    id?: number;                         // czasem frontend używa prostego id
-    year?: number;
-    genre?: string[];
-    director?: string;
-    rating?: number;
-    pricePerDay?: number;
-    available?: boolean;                 // czy film jest dostępny do wypożyczenia
-    language?: string;
+    genres: Genre[];
+    directors: Director[];
+    actors: Actor[];
+
+    id?: number;
 }
 
 // ─── Rental ─────────────────────────────────────────────────────────────────
@@ -40,27 +62,24 @@ export interface Rental {
     rental_id: number;
     user_id: number;
     movie_id: number;
-
-    // DODANO: Te pola wysyła teraz backend w Rental.serialize()
-    movie_title: string;
-    poster_url: string | null;
+    movie?: Movie;
+    movie_title?: string;
+    poster_url?: string | null;
 
     rental_date: string;
-    due_date: string;
-    return_date?: string | null;
+    due_date: string;          // Przywrócono z return_deadline
+    return_date?: string | null; // Przywrócono z returned_at
 
-    // DODANO: Te pola też są w Twoim modelu w Pythonie
     is_returned: boolean;
     is_overdue: boolean;
-
-    movie?: Movie; // Opcjonalnie, jeśli używasz joinedload
+    status?: 'active' | 'returned' | 'overdue';
 }
 
 // ─── API Responses ──────────────────────────────────────────────────────────
 export interface PaginationMeta {
-    page: number;
+    page: number;      // Dla HomePage.tsx
     per_page: number;
-    total: number;
+    total: number;     // Dla HomePage.tsx
     total_pages: number;
     has_next: boolean;
     has_prev: boolean;
@@ -69,6 +88,10 @@ export interface PaginationMeta {
 export interface MoviesResponse {
     movies: Movie[];
     pagination: PaginationMeta;
+}
+
+export interface GenresResponse {
+    genres: Genre[];
 }
 
 export interface LoginResponse {

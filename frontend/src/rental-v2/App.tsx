@@ -4,9 +4,9 @@ import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import LoginPage from '../Pages/LoginPage/LoginPage';           // duża P
 import HomePage from '../Pages/HomePage/HomePage';             // duża P
 import MyRentalsPage from '../Pages/MyRentalsPage/MyRentalsPage'; // duża P
+import MovieDetailPage from '../Pages/MovieDetailPage/MovieDetailPage'; // duża P
 import './global.css';
 
-// ─── Ochrona tras ─────────────────────────────────────────────────────────────
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, loading } = useAuth();
 
@@ -18,10 +18,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'rgba(235,225,205,0.3)',
+                color: 'rgba(235,225,205,0.25)',
                 fontFamily: 'Karla, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '1px',
+                fontSize: '13px',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
             }}>
                 Ładowanie...
             </div>
@@ -40,11 +41,13 @@ const AppRoutes: React.FC = () => (
         <Route path="/" element={
             <ProtectedRoute><HomePage /></ProtectedRoute>
         } />
+        <Route path="/movie/:id" element={
+            <ProtectedRoute><MovieDetailPage /></ProtectedRoute>
+        } />
         <Route path="/rentals" element={
             <ProtectedRoute><MyRentalsPage /></ProtectedRoute>
         } />
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
 );

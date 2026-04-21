@@ -1,19 +1,8 @@
-from .base import (
-    Base,
-    Mapped,
-    mapped_column,
-    relationship,
-    String,
-    Integer,
-    Date,
-    datetime,
-    Enum,
-)
 import enum
-from .movie import Movie
-from flask import url_for
-
-from app.extensions import db, Base
+from app.extensions import db
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Integer, Date, Text, Enum
+from datetime import datetime
 
 
 class Gender(enum.Enum):
@@ -28,48 +17,39 @@ class Actor(db.Model):
     actor_name: Mapped[str] = mapped_column(
         String(100), unique=True, nullable=False, index=True
     )
-    birth_date: Mapped[datetime] = mapped_column(Date)
-    birth_place: Mapped[str] = mapped_column(String(255))
-    biography: Mapped[str] = mapped_column(String(2000))
-    photo_url: Mapped[str] = mapped_column(String(255), nullable=True)
-
+    birth_date: Mapped[datetime] = mapped_column(Date, nullable=True)
+    birth_place: Mapped[str] = mapped_column(String(255), nullable=True)
+    biography: Mapped[str] = mapped_column(Text, nullable=True)
+    photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
     gender: Mapped[Gender] = mapped_column(Enum(Gender), nullable=True)
 
     movies: Mapped[list["Movie"]] = relationship(
-        "Movie", secondary="movie_actors", back_populates="actors"
+        "Movie", secondary="movie_actors", back_populates="actors", lazy="selectin"
     )
 
     def __repr__(self):
-        return f"<Actor(id={self.actor_id}, name='{self.actor_name}', birth_date={self.birth_date})>"
+        return f"<Actor(id={self.actor_id}, name='{self.actor_name}')>"
+
+    def _resolve_photo_url(self):
+        if not self.photo_url:
+            return None
+        if self.photo_url.startswith(("http://", "https://")):
+            return self.photo_url
+        from flask import url_for
+        return url_for("static", filename=f"actors/{self.photo_url}", _external=True)
 
     def serialize(self, include_movies=False):
-        from flask import url_for
-
-        def is_full_url(url):
-            return url.startswith("http://") or url.startswith("https://")
-
-        photo = None
-        if self.photo_url:
-            if is_full_url(self.photo_url):
-                photo = self.photo_url
-            else:
-                photo = url_for(
-                    "static", filename=f"actors/{self.photo_url}", _external=True
-                )
-
         result = {
             "id": self.actor_id,
             "name": self.actor_name,
             "birth_date": self.birth_date.isoformat() if self.birth_date else None,
             "birth_place": self.birth_place,
             "biography": self.biography,
-            "photo_url": photo,
-            "gender": (self.gender.value if self.gender else None),
+            "photo_url": self._resolve_photo_url(),
+            "gender": self.gender.value if self.gender else None,
         }
-
         if include_movies:
             result["movies"] = [
-                {"id": movie.movie_id, "title": movie.title} for movie in self.movies
+                {"id": m.movie_id, "title": m.title} for m in self.movies
             ]
-
         return result
