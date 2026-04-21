@@ -1,5 +1,6 @@
+# app/routes/movies.py
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from app.services.movie_service import (
     get_all_movies,
     get_movies_paginated,
@@ -19,14 +20,36 @@ def get_movies():
     per_page = request.args.get("per_page", 20, type=int)
     search = request.args.get("search", None)
     genre_id = request.args.get("genre_id", None, type=int)
-    result = get_movies_paginated(page, per_page, search, genre_id)
+
+    # Próbujemy pobrać tożsamość użytkownika, ale nie wyrzucamy błędu jeśli go nie ma
+    user_id = None
+    try:
+        # optional=True pozwala na dostęp niezalogowanym użytkownikom
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+    except Exception:
+        # W razie błędu dekodowania tokenu traktujemy użytkownika jako gościa
+        user_id = None
+
+    # Przekazujemy user_id do serwisu, aby w JEDNYM zapytaniu do bazy
+    # sprawdzić filmy i ich statusy wypożyczenia przez tego usera
+    result = get_movies_paginated(page, per_page, search, genre_id, user_id=user_id)
     return jsonify(result), 200
 
 
-# GET /movies/<movie_id>  — zwraca pełne dane z obsadą, reżyserami, gatunkami
+# GET /movies/<movie_id>
 @movies_bp.route("/<int:movie_id>", methods=["GET"])
 def get_movie(movie_id):
-    movie = get_movie_by_id(movie_id)
+    # Tutaj też warto dodać opcjonalny user_id, jeśli na widoku detali
+    # również chcesz od razu wiedzieć, czy film jest wypożyczony
+    user_id = None
+    try:
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+    except Exception:
+        user_id = None
+
+    movie = get_movie_by_id(movie_id, user_id=user_id)
     if not movie:
         return jsonify({"error": "Film nie został znaleziony"}), 404
     return jsonify(movie), 200

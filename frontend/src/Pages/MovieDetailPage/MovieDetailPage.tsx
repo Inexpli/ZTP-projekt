@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import RentalModal from '../../components/RentalModal/RentalModal';
+import VideoModal from '../../components/VideoModal/VideoModal'; // Import VideoModal
 import { Movie, Actor, Director } from '../../rental-v2/types/index';
 import * as movieService from '../../services/movieService';
 import * as rentalService from '../../services/rentalService';
@@ -16,6 +17,7 @@ const MovieDetailPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isVideoOpen, setIsVideoOpen] = useState(false); // Stan dla VideoModal
     const [rentingLoading, setRentingLoading] = useState(false);
     const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
     const [activeTab, setActiveTab] = useState<'cast' | 'directors'>('cast');
@@ -28,7 +30,6 @@ const MovieDetailPage: React.FC = () => {
             setLoading(true);
             try {
                 const data = await movieService.getMovieById(Number(id));
-                // Sprawdź dostępność
                 try {
                     const check = await rentalService.checkMovieAvailability(data.movie_id);
                     setMovie({ ...data, available: check.available });
@@ -78,7 +79,6 @@ const MovieDetailPage: React.FC = () => {
 
     const releaseYear = movie?.release_date?.split('-')[0];
 
-    // ─── Loading skeleton ─────────────────────────────────────────────────
     if (loading) {
         return (
             <div className={styles.page}>
@@ -96,7 +96,6 @@ const MovieDetailPage: React.FC = () => {
         );
     }
 
-    // ─── Error / not found ────────────────────────────────────────────────
     if (error || !movie) {
         return (
             <div className={styles.page}>
@@ -117,7 +116,6 @@ const MovieDetailPage: React.FC = () => {
         <div className={styles.page}>
             <Navbar onCartClick={() => navigate('/rentals')} />
 
-            {/* Toast */}
             <AnimatePresence>
                 {toast && (
                     <motion.div
@@ -132,7 +130,6 @@ const MovieDetailPage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* ─── Hero z plakatu ───────────────────────────────────────── */}
             <div className={styles.hero}>
                 {movie.poster_url && !posterError && (
                     <img
@@ -145,7 +142,6 @@ const MovieDetailPage: React.FC = () => {
                 <div className={styles.heroOverlay} />
             </div>
 
-            {/* ─── Główna treść ─────────────────────────────────────────── */}
             <div className={styles.container}>
                 <motion.div
                     className={styles.mainSection}
@@ -153,7 +149,6 @@ const MovieDetailPage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    {/* Plakat */}
                     <div className={styles.posterCol}>
                         <div className={styles.posterWrapper}>
                             {movie.poster_url && !posterError ? (
@@ -170,7 +165,6 @@ const MovieDetailPage: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Przycisk wypożyczenia pod plakatem */}
                         <button
                             className={`${styles.rentBtn} ${movie.available === false ? styles.rentBtnDisabled : ''}`}
                             onClick={() => movie.available !== false && setIsModalOpen(true)}
@@ -194,22 +188,22 @@ const MovieDetailPage: React.FC = () => {
                             )}
                         </button>
 
+                        {/* Poprawiony przycisk zwiastuna otwierający VideoModal */}
                         {movie.trailer_url && (
-                            <a
-                                href={movie.trailer_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <button
+                                type="button"
                                 className={styles.trailerBtn}
+                                onClick={() => setIsVideoOpen(true)}
+                                style={{ width: '100%', marginTop: '12px' }}
                             >
                                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
                                     <polygon points="5,3 19,12 5,21" />
                                 </svg>
                                 Zwiastun
-                            </a>
+                            </button>
                         )}
                     </div>
 
-                    {/* Info */}
                     <div className={styles.infoCol}>
                         <button className={styles.backBtn} onClick={() => navigate(-1)}>
                             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -218,7 +212,6 @@ const MovieDetailPage: React.FC = () => {
                             Wróć
                         </button>
 
-                        {/* Gatunki */}
                         {movie.genres.length > 0 && (
                             <div className={styles.genres}>
                                 {movie.genres.map(g => (
@@ -229,7 +222,6 @@ const MovieDetailPage: React.FC = () => {
 
                         <h1 className={styles.title}>{movie.title}</h1>
 
-                        {/* Meta */}
                         <div className={styles.meta}>
                             {releaseYear && <span>{releaseYear}</span>}
                             {movie.duration_minutes && (
@@ -249,7 +241,6 @@ const MovieDetailPage: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Reżyserzy — skrót */}
                         {hasDirectors && (
                             <div className={styles.directorsRow}>
                                 <span className={styles.metaLabel}>Reżyseria</span>
@@ -259,12 +250,10 @@ const MovieDetailPage: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Opis */}
                         {movie.description && (
                             <p className={styles.description}>{movie.description}</p>
                         )}
 
-                        {/* Data premiery */}
                         {movie.release_date && (
                             <div className={styles.detailRow}>
                                 <span className={styles.metaLabel}>Premiera</span>
@@ -272,7 +261,6 @@ const MovieDetailPage: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Dostępność */}
                         <div className={styles.availabilityRow}>
                             <span className={`${styles.availDot} ${movie.available === false ? styles.availDotNo : styles.availDotYes}`} />
                             <span className={styles.metaValue}>
@@ -282,7 +270,6 @@ const MovieDetailPage: React.FC = () => {
                     </div>
                 </motion.div>
 
-                {/* ─── Obsada i reżyserzy ─────────────────────────────────── */}
                 {(hasCast || hasDirectors) && (
                     <motion.section
                         className={styles.castSection}
@@ -290,7 +277,6 @@ const MovieDetailPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                        {/* Zakładki */}
                         <div className={styles.castTabs}>
                             {hasCast && (
                                 <button
@@ -351,7 +337,6 @@ const MovieDetailPage: React.FC = () => {
                 )}
             </div>
 
-            {/* ─── Bio popup ───────────────────────────────────────────────── */}
             <AnimatePresence>
                 {selectedPerson && (
                     <PersonBioModal
@@ -361,13 +346,21 @@ const MovieDetailPage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* ─── Modal wypożyczenia ───────────────────────────────────────── */}
+            {/* Modal wypożyczenia */}
             <RentalModal
                 movie={movie}
                 isOpen={isModalOpen}
                 onClose={() => !rentingLoading && setIsModalOpen(false)}
                 onConfirm={handleConfirmRental}
                 loading={rentingLoading}
+            />
+
+            {/* Dodany VideoModal */}
+            <VideoModal
+                isOpen={isVideoOpen}
+                onClose={() => setIsVideoOpen(false)}
+                trailerUrl={movie.trailer_url || ''}
+                movieTitle={movie.title}
             />
         </div>
     );

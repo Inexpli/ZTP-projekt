@@ -14,9 +14,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
     const [imgError, setImgError] = useState(false);
     const releaseYear = movie.release_date?.split('-')[0];
 
+    // Logika dostępności: film jest niedostępny, gdy backend 
+    // jawnie ustawi available: false LUB gdy is_rented jest true.
+    const isUnavailable = movie.available === false || movie.is_rented === true;
+
     return (
         <motion.div
-            className={`${styles.card} ${movie.available === false ? styles.cardUnavailable : ''}`}
+            className={`${styles.card} ${isUnavailable ? styles.cardUnavailable : ''}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
@@ -46,8 +50,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                     </button>
                 </div>
 
-                {movie.available === false && (
-                    <div className={styles.unavailableBadge}>Niedostępny</div>
+                {isUnavailable && (
+                    <div className={styles.unavailableBadge}>
+                        {movie.is_rented ? 'Wypożyczone' : 'Niedostępny'}
+                    </div>
                 )}
 
                 {movie.country && (
@@ -57,7 +63,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
 
             <div className={styles.info}>
                 {/* Gatunki */}
-                {movie.genres?.length > 0 && (
+                {movie.genres && movie.genres.length > 0 && (
                     <div className={styles.genres}>
                         {movie.genres.slice(0, 2).map(g => (
                             <span key={g.id} className={styles.genre}>{g.name}</span>
@@ -86,11 +92,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                 )}
 
                 <button
-                    className={`${styles.rentBtn} ${movie.available === false ? styles.rentBtnDisabled : ''}`}
-                    onClick={() => movie.available !== false && onRent(movie)}
-                    disabled={movie.available === false}
+                    className={`${styles.rentBtn} ${isUnavailable ? styles.rentBtnDisabled : ''}`}
+                    onClick={() => !isUnavailable && onRent(movie)}
+                    disabled={isUnavailable}
                 >
-                    {movie.available === false ? 'Niedostępny' : 'Wypożycz — 14 dni'}
+                    {movie.is_rented
+                        ? 'Już wypożyczasz'
+                        : movie.available === false
+                            ? 'Niedostępny'
+                            : 'Wypożycz — 14 dni'}
                 </button>
             </div>
         </motion.div>

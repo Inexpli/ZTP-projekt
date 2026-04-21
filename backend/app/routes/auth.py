@@ -5,6 +5,7 @@ from app.services.auth_service import (
     login_user,
     get_current_user,
     update_current_user,
+    change_user_password,
 )
 
 auth_bp = Blueprint("auth", __name__)
@@ -14,7 +15,7 @@ auth_bp = Blueprint("auth", __name__)
 def register():
     try:
         data = request.get_json()
-        print(f"DEBUG: Otrzymane dane: {data}")  # Zobaczymy co przesyła React
+        print(f"DEBUG: Otrzymane dane: {data}")
         user_data = register_user(data)
         return (
             jsonify(
@@ -25,7 +26,6 @@ def register():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        # KLUCZOWE: Wypisujemy błąd w konsoli serwera!
         import traceback
 
         print("---------- BŁĄD SERWERA ----------")
@@ -34,7 +34,6 @@ def register():
         return jsonify({"error": str(e), "details": "Sprawdź konsolę serwera"}), 500
 
 
-# Logowanie
 @auth_bp.route("/login", methods=["POST"])
 def login():
     try:
@@ -50,7 +49,6 @@ def login():
         return jsonify({"error": "Błąd podczas logowania"}), 500
 
 
-# Dane aktualnego użytkownika
 @auth_bp.route("/me", methods=["GET"])
 @jwt_required()
 def me():
@@ -61,7 +59,6 @@ def me():
     return jsonify(user), 200
 
 
-# Aktualizacja danych użytkownika
 @auth_bp.route("/me", methods=["PUT"])
 @jwt_required()
 def update_me():
@@ -79,3 +76,26 @@ def update_me():
         )
     except Exception as e:
         return jsonify({"error": "Błąd podczas aktualizacji danych"}), 500
+
+
+@auth_bp.route("/change-password", methods=["POST"])
+@jwt_required()
+def change_password():
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+
+        old_pwd = data.get("oldPassword")
+        new_pwd = data.get("newPassword")
+
+        if not old_pwd or not new_pwd:
+            return jsonify({"error": "Wymagane stare i nowe hasło"}), 400
+
+        change_user_password(user_id, old_pwd, new_pwd)
+
+        return jsonify({"message": "Hasło zostało zmienione pomyślnie"}), 200
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": "Błąd serwera podczas zmiany hasła"}), 500

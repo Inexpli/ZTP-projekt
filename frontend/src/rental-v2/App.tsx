@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import LoginPage from '../Pages/LoginPage/LoginPage';           // duża P
+import LoginPage from '../Pages/LoginPage/LoginPage';          // duża P
 import HomePage from '../Pages/HomePage/HomePage';             // duża P
 import MyRentalsPage from '../Pages/MyRentalsPage/MyRentalsPage'; // duża P
 import MovieDetailPage from '../Pages/MovieDetailPage/MovieDetailPage'; // duża P
+import ProfilePage from '../Pages/ProfilePage/ProfilePage'; // NOWOŚĆ
 import './global.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -46,6 +47,9 @@ const AppRoutes: React.FC = () => (
         } />
         <Route path="/rentals" element={
             <ProtectedRoute><MyRentalsPage /></ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+            <ProtectedRoute><ProfilePage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<Navigate to="/" replace />} />

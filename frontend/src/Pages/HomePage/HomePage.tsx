@@ -1,50 +1,66 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import RentalModal from '../../components/RentalModal/RentalModal';
+import VideoModal from '../../components/VideoModal/VideoModal';
 import { Movie, PaginationMeta, Genre } from '../../rental-v2/types/index';
 import * as movieService from '../../services/movieService';
 import * as rentalService from '../../services/rentalService';
 import * as genreService from '../../services/genreService';
 import styles from './HomePage.module.css';
 
+// ─── KOMPONENT GŁÓWNY: HomePage ──────────────────────────────────────────────
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
 
+    // Stany danych
     const [movies, setMovies] = useState<Movie[]>([]);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
-    const [genres, setGenres] = useState<Genre[]>([]);
+    const [allGenres, setAllGenres] = useState<Genre[]>([]);
     const [loadingMovies, setLoadingMovies] = useState(true);
     const [moviesError, setMoviesError] = useState('');
 
+    // Stany filtrów i wyszukiwania
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const [selectedGenreId, setSelectedGenreId] = useState<number | null>(null);
     const [page, setPage] = useState(1);
 
+    // Stany wypożyczeń i UI
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [rentingLoading, setRentingLoading] = useState(false);
     const [activeRentalCount, setActiveRentalCount] = useState(0);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-    // ─── 1. Pobierz gatunki z API (raz przy starcie) ───────────────────────
+    // ─── 1. Pobierz wszystkie gatunki (raz przy starcie) ───────────────────
     useEffect(() => {
         genreService.getGenres()
-            .then(res => setGenres(res.genres))
-            .catch(() => { }); // cicho — filtry opcjonalne
+            .then(res => setAllGenres(res.genres))
+            .catch(() => { });
     }, []);
 
-    // ─── 2. Pobierz aktywne wypożyczenia (badge w Navbar) ────────────────────
+    // ─── 2. Pobierz liczbę aktywnych wypożyczeń ────────────────────────────
     useEffect(() => {
         rentalService.getMyActiveRentals()
             .then(res => setActiveRentalCount(res.rentals.length))
             .catch(() => { });
     }, []);
 
-    // ─── 3. Debounce wyszukiwania (opóźnienie zapytania) ──────────────────────
+    // ─── 3. Filtrowanie gatunków (Tylko te, które mają przypisane filmy) ────
+    const activeGenres = useMemo(() => {
+        if (movies.length === 0) return [];
+        const usedGenreIds = new Set();
+        movies.forEach(movie => {
+            movie.genres?.forEach(g => usedGenreIds.add(g.id));
+        });
+        return allGenres.filter(g => usedGenreIds.has(g.id));
+    }, [allGenres, movies]);
+
+    // ─── 4. Debounce wyszukiwania ──────────────────────────────────────────
     useEffect(() => {
         const t = setTimeout(() => {
             setSearch(searchInput);
@@ -53,7 +69,7 @@ const HomePage: React.FC = () => {
         return () => clearTimeout(t);
     }, [searchInput]);
 
-    // ─── 4. Definicja funkcji pobierającej filmy ─────────────────────────────
+    // ─── 5. Pobieranie filmów ──────────────────────────────────────────────
     const fetchMovies = useCallback(async () => {
         setLoadingMovies(true);
         setMoviesError('');
@@ -62,19 +78,12 @@ const HomePage: React.FC = () => {
                 page, 20, search || undefined, selectedGenreId || undefined
             );
 
-            // Sprawdzanie dostępności dla każdego filmu (Uwaga: N+1 requests!)
-            const withAvailability = await Promise.all(
-                result.movies.map(async (movie: Movie) => {
-                    try {
-                        const check = await rentalService.checkMovieAvailability(movie.movie_id);
-                        return { ...movie, available: check.available };
-                    } catch {
-                        return { ...movie, available: true };
-                    }
-                })
-            );
+            const processedMovies = result.movies.map((m: any) => ({
+                ...m,
+                available: m.available !== false && !m.is_rented
+            }));
 
-            setMovies(withAvailability);
+            setMovies(processedMovies);
             setPagination(result.pagination);
         } catch (err) {
             setMoviesError('Nie udało się załadować filmów. Spróbuj ponownie.');
@@ -83,13 +92,11 @@ const HomePage: React.FC = () => {
         }
     }, [page, search, selectedGenreId]);
 
-    // ─── 5. KLUCZOWA POPRAWKA: Wywołanie fetchMovies ────────────────────────
-    // Bez tego useEffecta funkcja fetchMovies nigdy by się nie odpaliła!
     useEffect(() => {
         fetchMovies();
     }, [fetchMovies]);
 
-    // ─── Obsługa wypożyczeń ──────────────────────────────────────────────────
+    // ─── 6. Obsługa wypożyczeń ──────────────────────────────────────────────
     const handleRent = (movie: Movie) => {
         setSelectedMovie(movie);
         setIsModalOpen(true);
@@ -100,7 +107,7 @@ const HomePage: React.FC = () => {
         try {
             await rentalService.rentMovie(movie.movie_id);
             setMovies(prev =>
-                prev.map(m => m.movie_id === movie.movie_id ? { ...m, available: false } : m)
+                prev.map(m => m.movie_id === movie.movie_id ? { ...m, available: false, is_rented: true } : m)
             );
             setActiveRentalCount(c => c + 1);
             setIsModalOpen(false);
@@ -194,8 +201,18 @@ const HomePage: React.FC = () => {
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                                         <polygon points="5,3 19,12 5,21" />
                                     </svg>
-                                    Wypożycz teraz · 14 dni
+                                    {featuredMovie.available === false ? 'Niedostępny' : 'Wypożycz teraz · 14 dni'}
                                 </button>
+
+                                {featuredMovie.trailer_url && (
+                                    <button
+                                        className={styles.heroTrailerBtn}
+                                        onClick={() => setIsVideoOpen(true)}
+                                    >
+                                        Obejrzyj zwiastun
+                                    </button>
+                                )}
+
                                 <button
                                     className={styles.heroDetailsBtn}
                                     onClick={() => navigate(`/movie/${featuredMovie.movie_id}`)}
@@ -208,7 +225,6 @@ const HomePage: React.FC = () => {
                 </section>
             )}
 
-            {/* ─── Toast ─── */}
             <AnimatePresence>
                 {toast && (
                     <motion.div
@@ -223,7 +239,6 @@ const HomePage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* ─── Catalog ─── */}
             <section className={styles.catalog}>
                 <div className={styles.catalogInner}>
                     <div className={styles.catalogHeader}>
@@ -250,7 +265,7 @@ const HomePage: React.FC = () => {
                         </div>
                     </div>
 
-                    {genres.length > 0 && (
+                    {(activeGenres.length > 0 || selectedGenreId) && (
                         <div className={styles.genreFilters}>
                             <button
                                 className={`${styles.genreFilter} ${!selectedGenreId ? styles.genreFilterActive : ''}`}
@@ -258,7 +273,7 @@ const HomePage: React.FC = () => {
                             >
                                 Wszystkie
                             </button>
-                            {genres.map(g => (
+                            {activeGenres.map(g => (
                                 <button
                                     key={g.id}
                                     className={`${styles.genreFilter} ${selectedGenreId === g.id ? styles.genreFilterActive : ''}`}
@@ -324,6 +339,14 @@ const HomePage: React.FC = () => {
                 onClose={() => !rentingLoading && setIsModalOpen(false)}
                 onConfirm={handleConfirmRental}
                 loading={rentingLoading}
+            />
+
+            {/* MODAL WIDEO */}
+            <VideoModal
+                isOpen={isVideoOpen}
+                onClose={() => setIsVideoOpen(false)}
+                trailerUrl={featuredMovie?.trailer_url || ''} // Zmieniono z videoUrl na trailerUrl
+                movieTitle={featuredMovie?.title || ''}       // Dodano brakujący wymagany prop
             />
         </div>
     );

@@ -105,6 +105,12 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                                 <div className={styles.dropdownDivider} />
                                 <button
                                     className={styles.dropdownItem}
+                                    onClick={() => { setMenuOpen(false); navigate('/profile'); }}
+                                >
+                                    Ustawienia profilu
+                                </button>
+                                <button
+                                    className={styles.dropdownItem}
                                     onClick={() => { setMenuOpen(false); navigate('/rentals'); }}
                                 >
                                     Moje wypożyczenia

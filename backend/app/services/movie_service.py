@@ -1,6 +1,8 @@
+# app/services/movie_service.py
 from app.repositories.movie_repository import MovieRepository
 from app.repositories.genre_repository import GenreRepository
 from app.models.movie_genre import MovieGenre
+from app.models.rental import Rental  # Importujemy model Rental do sprawdzenia statusów
 from app.extensions import db
 
 movie_repo = MovieRepository()
@@ -11,16 +13,53 @@ def get_all_movies():
     return [m.serialize() for m in movie_repo.get_all()]
 
 
-def get_movies_paginated(page=1, per_page=20, search=None, genre_id=None):
+def get_movies_paginated(page=1, per_page=20, search=None, genre_id=None, user_id=None):
+    # 1. Pobieramy filmy z bazy danych
     result = movie_repo.get_paginated(page, per_page, search, genre_id)
-    result["movies"] = [m.serialize() for m in result["movies"]]
+    movies = result["movies"]
+
+    # 2. Jeśli mamy user_id, pobieramy ID filmów, które ten user aktualnie wypożycza
+    active_rental_ids = set()
+    if user_id:
+        # Pobieramy tylko aktywne wypożyczenia dla filmów z bieżącej strony
+        movie_ids_on_page = [m.movie_id for m in movies]
+        rentals = Rental.query.filter(
+            Rental.user_id == user_id,
+            Rental.movie_id.in_(movie_ids_on_page),
+            Rental.return_date == None,
+        ).all()
+        active_rental_ids = {r.movie_id for r in rentals}
+
+    # 3. Serializujemy filmy i dodajemy pole 'is_rented'
+    serialized_movies = []
+    for m in movies:
+        data = m.serialize()
+        # Dodajemy informację o wypożyczeniu
+        data["is_rented"] = m.movie_id in active_rental_ids
+        serialized_movies.append(data)
+
+    result["movies"] = serialized_movies
     return result
 
 
-def get_movie_by_id(movie_id):
-    """Zwraca pełne dane z obsadą (include_cast=True) dla strony szczegółów."""
+def get_movie_by_id(movie_id, user_id=None):
+    """Zwraca pełne dane z obsadą oraz opcjonalnie informację o wypożyczeniu."""
     movie = movie_repo.get_by_id(movie_id)
-    return movie.serialize(include_cast=True) if movie else None
+    if not movie:
+        return None
+
+    data = movie.serialize(include_cast=True)
+
+    # Sprawdzamy status wypożyczenia dla pojedynczego filmu
+    if user_id:
+        rental = Rental.query.filter_by(
+            user_id=user_id, movie_id=movie_id, return_date=None
+        ).first()
+        data["is_rented"] = rental is not None
+    else:
+        data["is_rented"] = False
+
+    return data
 
 
 def create_movie(data):
@@ -28,7 +67,6 @@ def create_movie(data):
         raise ValueError("Tytuł jest wymagany")
     movie = movie_repo.create(data)
 
-    # Opcjonalnie przypisz gatunki przy tworzeniu
     if "genre_ids" in data:
         for gid in data["genre_ids"]:
             if genre_repo.get_by_id(gid):
@@ -43,7 +81,6 @@ def update_movie(movie_id, data):
     if not updated:
         return None
 
-    # Aktualizacja gatunków jeśli przekazano
     if "genre_ids" in data:
         db.session.query(MovieGenre).filter_by(movie_id=movie_id).delete()
         for gid in data["genre_ids"]:

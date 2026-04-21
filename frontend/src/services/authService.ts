@@ -6,7 +6,6 @@ export const register = async (
     username: string,
     email: string,
     password: string
-
 ): Promise<{ message: string; user: User }> => {
     const response = await api.post('/auth/register', {
         username,
@@ -32,11 +31,26 @@ export const getMe = async (): Promise<User> => {
 };
 
 // PUT /auth/me
+// Zaktualizowano: usunięto first_name/last_name zgodnie ze zmianami w UserRepository
 export const updateMe = async (data: {
-    first_name?: string;
-    last_name?: string;
+    username?: string;
     email?: string;
 }): Promise<{ message: string; user: User }> => {
     const response = await api.put('/auth/me', data);
+    return response.data;
+};
+
+/**
+ * Zmiana hasła aktualnie zalogowanego użytkownika
+ * POST /auth/change-password
+ */
+export const changePassword = async (
+    oldPassword: string,
+    newPassword: string
+): Promise<{ message: string }> => {
+    const response = await api.post('/auth/change-password', {
+        oldPassword,
+        newPassword
+    });
     return response.data;
 };

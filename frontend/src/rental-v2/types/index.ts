@@ -49,7 +49,7 @@ export interface Movie {
     trailer_url?: string;
     created_at?: string;
     available?: boolean;
-
+    is_rented?: boolean;
     genres: Genre[];
     directors: Director[];
     actors: Actor[];
