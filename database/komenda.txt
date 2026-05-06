@@ -1,1 +1,1 @@
-psql -U postgres -d ztp_projekt -f dane_filmhive.sql
+psql -U postgres -d ztp_projekt -f dane_cinerent.sql
