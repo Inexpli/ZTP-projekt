@@ -4,27 +4,27 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, Date, Text, Enum
 from datetime import datetime
 
-
 class Gender(enum.Enum):
     M = "M"
     K = "K"
-
 
 class Actor(db.Model):
     __tablename__ = "actors"
 
     actor_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     actor_name: Mapped[str] = mapped_column(
-        String(100), unique=True, nullable=False, index=True
+        String(255), unique=True, nullable=False, index=True
     )
     birth_date: Mapped[datetime] = mapped_column(Date, nullable=True)
     birth_place: Mapped[str] = mapped_column(String(255), nullable=True)
     biography: Mapped[str] = mapped_column(Text, nullable=True)
     photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
     gender: Mapped[Gender] = mapped_column(Enum(Gender), nullable=True)
-
-    movies: Mapped[list["Movie"]] = relationship(
-        "Movie", secondary="movie_actors", back_populates="actors", lazy="selectin"
+    movie_actors: Mapped[list["MovieActor"]] = relationship(
+        "MovieActor", 
+        back_populates="actor", 
+        lazy="selectin",
+        cascade="all, delete-orphan"
     )
 
     def __repr__(self):
@@ -48,8 +48,14 @@ class Actor(db.Model):
             "photo_url": self._resolve_photo_url(),
             "gender": self.gender.value if self.gender else None,
         }
+        
         if include_movies:
             result["movies"] = [
-                {"id": m.movie_id, "title": m.title} for m in self.movies
+                {
+                    "id": ma.movie.movie_id, 
+                    "title": ma.movie.title, 
+                    "role": ma.movie_role
+                } 
+                for ma in self.movie_actors if ma.movie
             ]
         return result

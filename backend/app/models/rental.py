@@ -10,12 +10,9 @@ class Rental(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey("movies.movie_id"), nullable=False)
 
     rental_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    due_date = db.Column(db.DateTime, nullable=False)  # termin zwrotu
-    return_date = db.Column(db.DateTime, nullable=True)  # faktyczna data zwrotu
+    due_date = db.Column(db.DateTime, nullable=False)
+    return_date = db.Column(db.DateTime, nullable=True) 
 
-    # ─── Relacje (Poprawione) ─────────────────────────────────────────────
-    # Używamy back_populates, ponieważ pola 'rentals' są już zdefiniowane
-    # w klasach Movie i User.
     user = db.relationship("User", back_populates="rentals")
     movie = db.relationship("Movie", back_populates="rentals")
 

@@ -1,7 +1,7 @@
 from app.extensions import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.orm import Mapped, relationship  # Dodano importy dla typu relacji
+from sqlalchemy.orm import Mapped, relationship
 
 
 class User(db.Model):
@@ -16,8 +16,6 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # ─── Relacje (DODANO) ────────────────────────────────────────────────
-    # Musi pasować do back_populates="user" w modelu Rental
     rentals = db.relationship("Rental", back_populates="user", lazy=True)
 
     def set_password(self, password):
