@@ -1,12 +1,21 @@
-# app/models/__init__.py
-
-# Importujemy db z extensions
-from app.extensions import db
-
-# Importujemy tylko modele, których aktualnie używamy
 from .user import User
+from .genre import Genre
+from .actor import Actor
+from .director import Director
 from .movie import Movie
+from .movie_actor import MovieActor
 from .rental import Rental
+from .movie_genre import MovieGenre
+from .movie_director import MovieDirector
 
-# Lista publicznie dostępnych obiektów
-__all__ = ["db", "User", "Movie", "Rental"]
+__all__ = [
+    "User",
+    "Genre",
+    "Actor",
+    "Director",
+    "Movie",
+    "MovieActor",
+    "Rental",
+    "MovieGenre",
+    "MovieDirector",
+]
