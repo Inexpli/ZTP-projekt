@@ -7,28 +7,29 @@ import logging
 
 load_dotenv()
 
-
 def create_app():
     app = Flask(__name__)
 
-    # ==================== LOGOWANIE ====================
-    # Zmieniamy na INFO, żeby DEBUG nie zalewał konsoli przy każdym zapytaniu
     logging.basicConfig(level=logging.INFO)
     app.logger.setLevel(logging.INFO)
 
-    # ==================== KONFIGURACJA ====================
-    db_password = os.environ.get("PASSWORD", "ZAQ!2wsx")
-
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/ztp_projekt?client_encoding=utf8"
-    )
+    db_password = os.environ.get("DB_PASSWORD", "ZAQ!2wsx")
+    
+    local_db_url = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/ztp_projekt?client_encoding=utf8"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", local_db_url)
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["JWT_SECRET_KEY"] = os.environ.get(
-        "JWT_SECRET_KEY", "super-secret-key-zmien-to-w-produkcji-2026"
-    )
+    
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_size": 10,
+        "pool_recycle": 3600,
+        "pool_pre_ping": True 
+    }
+
+    jwt_secret = os.environ.get("JWT_SECRET_KEY", "super-secret-key-zmien-to-w-produkcji-2026")
+
+    app.config["JWT_SECRET_KEY"] = jwt_secret
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400  # 24h
 
-    # ==================== CORS (POPRAWIONE) ====================
     CORS(
         app,
         resources={
@@ -37,8 +38,6 @@ def create_app():
                 "supports_credentials": True,
                 "allow_headers": ["Content-Type", "Authorization"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                # max_age: 3600 sekund (1h). Przeglądarka zapamięta pozwolenie OPTIONS
-                # i nie będzie wysyłać go przed każdym pojedynczym pobraniem filmu.
                 "max_age": 3600,
             }
         },
@@ -50,21 +49,6 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-
-    # ==================== MODELE I BAZA ====================
-    with app.app_context():
-        from app.models.user import User
-        from app.models.genre import Genre
-        from app.models.actor import Actor
-        from app.models.director import Director
-        from app.models.movie import Movie
-        from app.models.rental import Rental
-        from app.models.movie_actor import MovieActor
-        from app.models.movie_director import MovieDirector
-        from app.models.movie_genre import MovieGenre
-
-        db.create_all()
-        app.logger.info("🛠️  Struktura bazy danych została zweryfikowana/stworzona.")
 
     # ==================== BLUEPRINTY ====================
     from app.routes.auth import auth_bp
@@ -84,10 +68,7 @@ def create_app():
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        return (
-            jsonify({"error": "Token wygasł", "message": "Zaloguj się ponownie"}),
-            401,
-        )
+        return jsonify({"error": "Token wygasł", "message": "Zaloguj się ponownie"}), 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
