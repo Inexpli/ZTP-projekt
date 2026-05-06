@@ -4,7 +4,7 @@ services:
   # PostgreSQL
   # ─────────────────────────────────────────────────────────────────────────
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: cinerent_db
     restart: unless-stopped
     environment:
@@ -13,6 +13,7 @@ services:
       POSTGRES_DB:       ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
     networks:
       - cinerent_net
     healthcheck:
@@ -20,7 +21,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 120s
 
   # ─────────────────────────────────────────────────────────────────────────
   # Backend (Flask + Gunicorn)

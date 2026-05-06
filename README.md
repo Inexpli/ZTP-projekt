@@ -56,3 +56,14 @@ npm install
 # Start aplikacji
 npm start
 ```
+
+### Docker:
+```bash
+docker compose stop
+docker compose down -v
+docker volume prune -f
+docker compose build --no-cache
+docker compose up -d
+
+docker compose logs -f # Logi
+```
