@@ -1,88 +1,102 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import RentalModal from '../../components/RentalModal/RentalModal';
-import { Movie, PaginationMeta } from '../../rental-v2/types/index';
+import VideoModal from '../../components/VideoModal/VideoModal';
+import { Movie, PaginationMeta, Genre } from '../../rental-v2/types/index';
 import * as movieService from '../../services/movieService';
 import * as rentalService from '../../services/rentalService';
+import * as genreService from '../../services/genreService';
 import styles from './HomePage.module.css';
 
+// ─── KOMPONENT GŁÓWNY: HomePage ──────────────────────────────────────────────
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
 
-    // Dane filmów
+    // Stany danych
     const [movies, setMovies] = useState<Movie[]>([]);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+    const [allGenres, setAllGenres] = useState<Genre[]>([]);
     const [loadingMovies, setLoadingMovies] = useState(true);
     const [moviesError, setMoviesError] = useState('');
 
-    // Filtry
+    // Stany filtrów i wyszukiwania
+    const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
-    const [searchInput, setSearchInput] = useState(''); // opóźnione wyszukiwanie
+    const [selectedGenreId, setSelectedGenreId] = useState<number | null>(null);
     const [page, setPage] = useState(1);
 
-    // Modal wypożyczenia
+    // Stany wypożyczeń i UI
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [rentingLoading, setRentingLoading] = useState(false);
-
-    // Toast
+    const [activeRentalCount, setActiveRentalCount] = useState(0);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-    // Aktywne wypożyczenia (dla ikony koszyka w Navbar)
-    const [activeRentalCount, setActiveRentalCount] = useState(0);
+    // ─── 1. Pobierz wszystkie gatunki (raz przy starcie) ───────────────────
+    useEffect(() => {
+        genreService.getGenres()
+            .then(res => setAllGenres(res.genres))
+            .catch(() => { });
+    }, []);
 
-    // ─── Pobierz filmy ─────────────────────────────────────────────────────────
+    // ─── 2. Pobierz liczbę aktywnych wypożyczeń ────────────────────────────
+    useEffect(() => {
+        rentalService.getMyActiveRentals()
+            .then(res => setActiveRentalCount(res.rentals.length))
+            .catch(() => { });
+    }, []);
+
+    // ─── 3. Filtrowanie gatunków (Tylko te, które mają przypisane filmy) ────
+    const activeGenres = useMemo(() => {
+        if (movies.length === 0) return [];
+        const usedGenreIds = new Set();
+        movies.forEach(movie => {
+            movie.genres?.forEach(g => usedGenreIds.add(g.id));
+        });
+        return allGenres.filter(g => usedGenreIds.has(g.id));
+    }, [allGenres, movies]);
+
+    // ─── 4. Debounce wyszukiwania ──────────────────────────────────────────
+    useEffect(() => {
+        const t = setTimeout(() => {
+            setSearch(searchInput);
+            setPage(1);
+        }, 400);
+        return () => clearTimeout(t);
+    }, [searchInput]);
+
+    // ─── 5. Pobieranie filmów ──────────────────────────────────────────────
     const fetchMovies = useCallback(async () => {
         setLoadingMovies(true);
         setMoviesError('');
         try {
-            const result = await movieService.getMovies(page, 20, search || undefined);
-
-            // Dla każdego filmu sprawdź dostępność (batch — opcjonalne, można pominąć dla perf)
-            const moviesWithAvailability = await Promise.all(
-                result.movies.map(async (movie) => {
-                    try {
-                        const check = await rentalService.checkMovieAvailability(movie.movie_id);
-                        return { ...movie, available: check.available };
-                    } catch {
-                        return { ...movie, available: true };
-                    }
-                })
+            const result = await movieService.getMovies(
+                page, 20, search || undefined, selectedGenreId || undefined
             );
 
-            setMovies(moviesWithAvailability);
+            const processedMovies = result.movies.map((m: any) => ({
+                ...m,
+                available: m.available !== false && !m.is_rented
+            }));
+
+            setMovies(processedMovies);
             setPagination(result.pagination);
-        } catch (err: any) {
+        } catch (err) {
             setMoviesError('Nie udało się załadować filmów. Spróbuj ponownie.');
         } finally {
             setLoadingMovies(false);
         }
-    }, [page, search]);
+    }, [page, search, selectedGenreId]);
 
     useEffect(() => {
         fetchMovies();
     }, [fetchMovies]);
 
-    // ─── Opóźnione wyszukiwanie (debounce) ────────────────────────────────────
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearch(searchInput);
-            setPage(1);
-        }, 400);
-        return () => clearTimeout(timer);
-    }, [searchInput]);
-
-    // ─── Pobierz liczbę aktywnych wypożyczeń ──────────────────────────────────
-    useEffect(() => {
-        rentalService.getMyActiveRentals()
-            .then(res => setActiveRentalCount(res.rentals.length))
-            .catch(() => { }); // cicho — może być niezalogowany
-    }, []);
-
-    // ─── Wypożyczenie ─────────────────────────────────────────────────────────
+    // ─── 6. Obsługa wypożyczeń ──────────────────────────────────────────────
     const handleRent = (movie: Movie) => {
         setSelectedMovie(movie);
         setIsModalOpen(true);
@@ -92,21 +106,16 @@ const HomePage: React.FC = () => {
         setRentingLoading(true);
         try {
             await rentalService.rentMovie(movie.movie_id);
-
-            // Zaktualizuj dostępność w liście
             setMovies(prev =>
-                prev.map(m => m.movie_id === movie.movie_id ? { ...m, available: false } : m)
+                prev.map(m => m.movie_id === movie.movie_id ? { ...m, available: false, is_rented: true } : m)
             );
             setActiveRentalCount(c => c + 1);
             setIsModalOpen(false);
             showToast(`„${movie.title}" wypożyczony na 14 dni!`, 'success');
         } catch (err: any) {
-            const msg = err.response?.data?.error || 'Nie udało się wypożyczyć filmu.';
+            const msg = err.response?.data?.error || 'Nie udało się wypożyczyć.';
             showToast(msg, 'error');
-            // Jeśli błąd 401 — przekieruj do logowania
-            if (err.response?.status === 401) {
-                navigate('/login');
-            }
+            if (err.response?.status === 401) navigate('/login');
         } finally {
             setRentingLoading(false);
         }
@@ -117,7 +126,11 @@ const HomePage: React.FC = () => {
         setTimeout(() => setToast(null), 4000);
     };
 
-    // ─── Featured (pierwszy dostępny film z listy) ────────────────────────────
+    const handleGenreSelect = (genreId: number | null) => {
+        setSelectedGenreId(genreId);
+        setPage(1);
+    };
+
     const featuredMovie = movies.find(m => m.available !== false) ?? movies[0];
 
     return (
@@ -127,27 +140,20 @@ const HomePage: React.FC = () => {
                 onCartClick={() => navigate('/rentals')}
             />
 
-            {/* ─── Hero ──────────────────────────────────────────────────────── */}
+            {/* ─── Hero ─── */}
             {!loadingMovies && featuredMovie && (
                 <section className={styles.hero}>
                     <div className={styles.heroBackground}>
-                        {featuredMovie.poster_url ? (
-                            <img
-                                src={featuredMovie.poster_url}
-                                alt=""
-                                className={styles.heroBgImage}
-                            />
-                        ) : (
-                            <div className={styles.heroBgFallback} />
+                        {featuredMovie.poster_url && (
+                            <img src={featuredMovie.poster_url} alt="" className={styles.heroBgImage} />
                         )}
                         <div className={styles.heroGradient} />
                     </div>
-
                     <div className={styles.heroContent}>
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            transition={{ duration: 0.8 }}
                         >
                             <div className={styles.heroLabel}>
                                 <span className={styles.heroDot} />
@@ -156,6 +162,14 @@ const HomePage: React.FC = () => {
 
                             <h1 className={styles.heroTitle}>{featuredMovie.title}</h1>
 
+                            {featuredMovie.genres && featuredMovie.genres.length > 0 && (
+                                <div className={styles.heroGenres}>
+                                    {featuredMovie.genres.map(g => (
+                                        <span key={g.id} className={styles.heroGenre}>{g.name}</span>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className={styles.heroMeta}>
                                 {featuredMovie.release_date && (
                                     <span>{featuredMovie.release_date.split('-')[0]}</span>
@@ -163,16 +177,13 @@ const HomePage: React.FC = () => {
                                 {featuredMovie.duration_minutes && (
                                     <>
                                         <span className={styles.heroDivider}>·</span>
-                                        <span>
-                                            {Math.floor(featuredMovie.duration_minutes / 60)}h{' '}
-                                            {featuredMovie.duration_minutes % 60}m
-                                        </span>
+                                        <span>{Math.floor(featuredMovie.duration_minutes / 60)}h {featuredMovie.duration_minutes % 60}m</span>
                                     </>
                                 )}
-                                {featuredMovie.country && (
+                                {featuredMovie.directors && featuredMovie.directors.length > 0 && (
                                     <>
                                         <span className={styles.heroDivider}>·</span>
-                                        <span>{featuredMovie.country}</span>
+                                        <span>reż. {featuredMovie.directors[0].name}</span>
                                     </>
                                 )}
                             </div>
@@ -190,26 +201,30 @@ const HomePage: React.FC = () => {
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                                         <polygon points="5,3 19,12 5,21" />
                                     </svg>
-                                    Wypożycz teraz · 14 dni
+                                    {featuredMovie.available === false ? 'Niedostępny' : 'Wypożycz teraz · 14 dni'}
                                 </button>
 
                                 {featuredMovie.trailer_url && (
-                                    <a
-                                        href={featuredMovie.trailer_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
                                         className={styles.heroTrailerBtn}
+                                        onClick={() => setIsVideoOpen(true)}
                                     >
                                         Obejrzyj zwiastun
-                                    </a>
+                                    </button>
                                 )}
+
+                                <button
+                                    className={styles.heroDetailsBtn}
+                                    onClick={() => navigate(`/movie/${featuredMovie.movie_id}`)}
+                                >
+                                    Więcej informacji
+                                </button>
                             </div>
                         </motion.div>
                     </div>
                 </section>
             )}
 
-            {/* ─── Toast ─────────────────────────────────────────────────────── */}
             <AnimatePresence>
                 {toast && (
                     <motion.div
@@ -217,51 +232,59 @@ const HomePage: React.FC = () => {
                         initial={{ opacity: 0, y: -60 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -60 }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
                     >
-                        <span className={styles.toastIcon}>
-                            {toast.type === 'success' ? '✓' : '✕'}
-                        </span>
+                        <span className={styles.toastIcon}>{toast.type === 'success' ? '✓' : '✕'}</span>
                         {toast.message}
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* ─── Catalog ───────────────────────────────────────────────────── */}
             <section className={styles.catalog}>
                 <div className={styles.catalogInner}>
                     <div className={styles.catalogHeader}>
                         <div>
                             <h2 className={styles.catalogTitle}>Katalog filmów</h2>
                             {pagination && (
-                                <p className={styles.catalogCount}>
-                                    {pagination.total} {pagination.total === 1 ? 'film' : 'filmów'}
-                                </p>
+                                <p className={styles.catalogCount}>{pagination.total} filmów</p>
                             )}
                         </div>
-
                         <div className={styles.searchWrapper}>
                             <svg className={styles.searchIcon} width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                             <input
                                 type="text"
-                                placeholder="Szukaj tytułu lub opisu..."
+                                placeholder="Szukaj..."
                                 value={searchInput}
                                 onChange={e => setSearchInput(e.target.value)}
                                 className={styles.searchInput}
                             />
                             {searchInput && (
-                                <button
-                                    className={styles.searchClear}
-                                    onClick={() => setSearchInput('')}
-                                >×</button>
+                                <button className={styles.searchClear} onClick={() => setSearchInput('')}>×</button>
                             )}
                         </div>
                     </div>
 
-                    {/* Skeleton / Error / Grid */}
+                    {(activeGenres.length > 0 || selectedGenreId) && (
+                        <div className={styles.genreFilters}>
+                            <button
+                                className={`${styles.genreFilter} ${!selectedGenreId ? styles.genreFilterActive : ''}`}
+                                onClick={() => handleGenreSelect(null)}
+                            >
+                                Wszystkie
+                            </button>
+                            {activeGenres.map(g => (
+                                <button
+                                    key={g.id}
+                                    className={`${styles.genreFilter} ${selectedGenreId === g.id ? styles.genreFilterActive : ''}`}
+                                    onClick={() => handleGenreSelect(g.id)}
+                                >
+                                    {g.name}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     {loadingMovies ? (
                         <div className={styles.skeletonGrid}>
                             {Array.from({ length: 8 }).map((_, i) => (
@@ -279,14 +302,12 @@ const HomePage: React.FC = () => {
                         <div className={styles.errorState}>
                             <span>⚠️</span>
                             <p>{moviesError}</p>
-                            <button className={styles.retryBtn} onClick={fetchMovies}>
-                                Spróbuj ponownie
-                            </button>
+                            <button className={styles.retryBtn} onClick={fetchMovies}>Spróbuj ponownie</button>
                         </div>
                     ) : movies.length === 0 ? (
                         <div className={styles.emptyState}>
                             <span>🎬</span>
-                            <p>Nie znaleziono filmów dla „{search}"</p>
+                            <p>Nie znaleziono filmów{search ? ` dla „${search}"` : ''}</p>
                         </div>
                     ) : (
                         <div className={styles.moviesGrid}>
@@ -302,26 +323,11 @@ const HomePage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Paginacja */}
                     {pagination && pagination.total_pages > 1 && !loadingMovies && (
                         <div className={styles.pagination}>
-                            <button
-                                className={styles.pageBtn}
-                                onClick={() => setPage(p => p - 1)}
-                                disabled={!pagination.has_prev}
-                            >
-                                ← Poprzednia
-                            </button>
-                            <span className={styles.pageInfo}>
-                                Strona {pagination.page} / {pagination.total_pages}
-                            </span>
-                            <button
-                                className={styles.pageBtn}
-                                onClick={() => setPage(p => p + 1)}
-                                disabled={!pagination.has_next}
-                            >
-                                Następna →
-                            </button>
+                            <button className={styles.pageBtn} onClick={() => setPage(p => p - 1)} disabled={!pagination.has_prev}>← Poprzednia</button>
+                            <span className={styles.pageInfo}>Strona {pagination.page} / {pagination.total_pages}</span>
+                            <button className={styles.pageBtn} onClick={() => setPage(p => p + 1)} disabled={!pagination.has_next}>Następna →</button>
                         </div>
                     )}
                 </div>
@@ -333,6 +339,14 @@ const HomePage: React.FC = () => {
                 onClose={() => !rentingLoading && setIsModalOpen(false)}
                 onConfirm={handleConfirmRental}
                 loading={rentingLoading}
+            />
+
+            {/* MODAL WIDEO */}
+            <VideoModal
+                isOpen={isVideoOpen}
+                onClose={() => setIsVideoOpen(false)}
+                trailerUrl={featuredMovie?.trailer_url || ''} // Zmieniono z videoUrl na trailerUrl
+                movieTitle={featuredMovie?.title || ''}       // Dodano brakujący wymagany prop
             />
         </div>
     );

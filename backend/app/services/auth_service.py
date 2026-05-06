@@ -15,14 +15,12 @@ def register_user(data):
     ):
         raise ValueError("Brak wymaganych pól: username, email, password")
 
-    # Sprawdź czy użytkownik już istnieje
     if user_repo.get_by_username(data["username"]):
         raise ValueError("Nazwa użytkownika jest już zajęta")
 
     if user_repo.get_by_email(data["email"]):
         raise ValueError("Email jest już używany")
 
-    # Przekazujemy tylko to, co model User jest w stanie przyjąć
     user = user_repo.create_user(
         username=data["username"], email=data["email"], password=data["password"]
     )
@@ -40,7 +38,6 @@ def login_user(username, password):
     if not user.is_active:
         raise ValueError("Konto zostało dezaktywowane")
 
-    # Tworzenie JWT tokenu
     access_token = create_access_token(
         identity=str(user.user_id), expires_delta=timedelta(days=1)
     )
@@ -62,3 +59,19 @@ def update_current_user(user_id, data):
     if not updated_user:
         return None
     return updated_user.serialize()
+
+
+def change_user_password(user_id, old_password, new_password):
+    """Zmienia hasło użytkownika po weryfikacji starego"""
+    user = user_repo.get_by_id(user_id)
+
+    if not user:
+        raise ValueError("Użytkownik nie istnieje")
+
+    if not user.check_password(old_password):
+        raise ValueError("Obecne hasło jest nieprawidłowe")
+
+    if len(new_password) < 6:
+        raise ValueError("Nowe hasło musi mieć co najmniej 6 znaków")
+
+    return user_repo.update_password(user_id, new_password)

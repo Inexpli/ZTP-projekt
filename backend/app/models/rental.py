@@ -10,12 +10,11 @@ class Rental(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey("movies.movie_id"), nullable=False)
 
     rental_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    due_date = db.Column(db.DateTime, nullable=False)  # termin zwrotu
-    return_date = db.Column(db.DateTime, nullable=True)  # faktyczna data zwrotu
+    due_date = db.Column(db.DateTime, nullable=False)
+    return_date = db.Column(db.DateTime, nullable=True) 
 
-    # Relacje
-    user = db.relationship("User", backref=db.backref("rentals", lazy=True))
-    movie = db.relationship("Movie", backref=db.backref("rentals", lazy=True))
+    user = db.relationship("User", back_populates="rentals")
+    movie = db.relationship("Movie", back_populates="rentals")
 
     def serialize(self):
         """Konwertuje obiekt modelu na słownik JSON"""
@@ -23,7 +22,6 @@ class Rental(db.Model):
             "rental_id": self.rental_id,
             "user_id": self.user_id,
             "movie_id": self.movie_id,
-            # Pobieranie danych z relacji movie
             "movie_title": self.movie.title if self.movie else f"Film #{self.movie_id}",
             "poster_url": self.movie.poster_url if self.movie else None,
             "rental_date": (

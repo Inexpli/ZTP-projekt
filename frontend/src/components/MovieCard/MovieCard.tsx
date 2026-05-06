@@ -10,22 +10,17 @@ interface MovieCardProps {
     index?: number;
 }
 
-const getReleaseYear = (release_date: string): string => {
-    if (!release_date) return '';
-    return release_date.split('-')[0];
-};
-
-const formatDuration = (minutes?: number): string => {
-    if (!minutes) return '';
-    return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-};
-
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index = 0 }) => {
     const [imgError, setImgError] = useState(false);
+    const releaseYear = movie.release_date?.split('-')[0];
+
+    // Logika dostępności: film jest niedostępny, gdy backend 
+    // jawnie ustawi available: false LUB gdy is_rented jest true.
+    const isUnavailable = movie.available === false || movie.is_rented === true;
 
     return (
         <motion.div
-            className={`${styles.card} ${!movie.available ? styles.cardUnavailable : ''}`}
+            className={`${styles.card} ${isUnavailable ? styles.cardUnavailable : ''}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
@@ -55,8 +50,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                     </button>
                 </div>
 
-                {!movie.available && (
-                    <div className={styles.unavailableBadge}>Niedostępny</div>
+                {isUnavailable && (
+                    <div className={styles.unavailableBadge}>
+                        {movie.is_rented ? 'Wypożyczone' : 'Niedostępny'}
+                    </div>
                 )}
 
                 {movie.country && (
@@ -65,14 +62,29 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
             </div>
 
             <div className={styles.info}>
+                {/* Gatunki */}
+                {movie.genres && movie.genres.length > 0 && (
+                    <div className={styles.genres}>
+                        {movie.genres.slice(0, 2).map(g => (
+                            <span key={g.id} className={styles.genre}>{g.name}</span>
+                        ))}
+                    </div>
+                )}
+
                 <h3 className={styles.title} onClick={() => onDetails(movie)}>
                     {movie.title}
                 </h3>
 
                 <p className={styles.meta}>
-                    {[getReleaseYear(movie.release_date), formatDuration(movie.duration_minutes)]
-                        .filter(Boolean)
-                        .join(' · ')}
+                    {[
+                        releaseYear,
+                        movie.duration_minutes
+                            ? `${Math.floor(movie.duration_minutes / 60)}h ${movie.duration_minutes % 60}m`
+                            : null,
+                        movie.directors?.[0]?.name
+                            ? `reż. ${movie.directors[0].name}`
+                            : null,
+                    ].filter(Boolean).join(' · ')}
                 </p>
 
                 {movie.description && (
@@ -80,11 +92,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                 )}
 
                 <button
-                    className={`${styles.rentBtn} ${!movie.available ? styles.rentBtnDisabled : ''}`}
-                    onClick={() => movie.available !== false && onRent(movie)}
-                    disabled={movie.available === false}
+                    className={`${styles.rentBtn} ${isUnavailable ? styles.rentBtnDisabled : ''}`}
+                    onClick={() => !isUnavailable && onRent(movie)}
+                    disabled={isUnavailable}
                 >
-                    {movie.available === false ? 'Niedostępny' : 'Wypożycz — 14 dni'}
+                    {movie.is_rented
+                        ? 'Już wypożyczasz'
+                        : movie.available === false
+                            ? 'Niedostępny'
+                            : 'Wypożycz — 14 dni'}
                 </button>
             </div>
         </motion.div>

@@ -50,12 +50,10 @@
 .heroGradient {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to top,
-        var(--bg) 0%,
-        rgba(8, 8, 12, 0.65) 40%,
-        rgba(8, 8, 12, 0.05) 100%
-    );
+    background: linear-gradient(to top,
+            var(--bg) 0%,
+            rgba(8, 8, 12, 0.65) 40%,
+            rgba(8, 8, 12, 0.05) 100%);
 }
 
 .heroContent {
@@ -88,8 +86,17 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.75); }
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.75);
+    }
 }
 
 .heroTitle {
@@ -161,7 +168,8 @@
     cursor: not-allowed;
 }
 
-.heroTrailerBtn {
+.heroTrailerBtn,
+.heroDetailsBtn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
@@ -176,9 +184,11 @@
     transition: all 0.25s;
 }
 
-.heroTrailerBtn:hover {
+.heroTrailerBtn:hover,
+.heroDetailsBtn:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
 /* ─── Toast ─── */
@@ -371,18 +381,25 @@
 }
 
 @keyframes shimmer {
-    from { background-position: 200% 0; }
-    to { background-position: -200% 0; }
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
 }
 
 /* ─── States ─── */
-.errorState, .emptyState {
+.errorState,
+.emptyState {
     text-align: center;
     padding: 80px 20px;
     color: rgba(235, 225, 205, 0.3);
 }
 
-.errorState span, .emptyState span {
+.errorState span,
+.emptyState span {
     font-size: 48px;
     display: block;
     margin-bottom: 14px;
@@ -446,13 +463,113 @@
     text-align: center;
 }
 
+/* ─── Filtry Gatunków ─── */
+.genreFilters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+    padding: 4px 0 12px;
+    /* Ukrywanie scrollbara przy zachowaniu funkcjonalności */
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) transparent;
+}
+
+/* Stylizacja scrollbara dla Chrome/Safari/Edge */
+.genreFilters::-webkit-scrollbar {
+    height: 4px;
+}
+
+.genreFilters::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.genreFilters::-webkit-scrollbar-thumb {
+    background: rgba(212, 163, 80, 0.2);
+    border-radius: 10px;
+}
+
+.genreFilter {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    color: rgba(235, 225, 205, 0.5);
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.genreFilter:hover {
+    background: rgba(212, 163, 80, 0.08);
+    border-color: rgba(212, 163, 80, 0.3);
+    color: var(--cream);
+    transform: translateY(-1px);
+}
+
+.genreFilterActive {
+    background: rgba(212, 163, 80, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 4px 15px rgba(212, 163, 80, 0.15);
+}
+
+/* ─── Dodatki do Hero ─── */
+.heroGenres {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.heroGenre {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(212, 163, 80, 0.1);
+    border: 1px solid rgba(212, 163, 80, 0.2);
+    border-radius: 4px;
+    padding: 3px 9px;
+}
+
+/* ─── Responsywność ─── */
 @media (max-width: 768px) {
-    .heroContent { padding: 0 20px 60px; }
-    .catalogInner { padding: 0 20px; }
-    .catalogHeader { flex-direction: column; align-items: flex-start; }
-    .searchWrapper { max-width: 100%; width: 100%; }
-    .moviesGrid, .skeletonGrid {
+    .heroContent {
+        padding: 0 20px 60px;
+    }
+
+    .heroTitle {
+        font-size: 42px;
+    }
+
+    .catalogInner {
+        padding: 0 20px;
+    }
+
+    .catalogHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .searchWrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .moviesGrid,
+    .skeletonGrid {
         grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
         gap: 14px;
+    }
+
+    .genreFilters {
+        padding-bottom: 15px;
     }
 }
