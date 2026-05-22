@@ -1,0 +1,20 @@
+task mode: create
+primary deck-profile: engineering-platform
+secondary gates: product-platform clarity, implementation proof, concise technical defense
+required proof objects:
+- Architecture map showing frontend, API gateway, backend, PostgreSQL, RabbitMQ, worker services, and observability services.
+- Sequence flow for rental/auth events through outbox, RabbitMQ, notification-service, and audit-service.
+- Verification evidence tied to commands and observed system state.
+- Risk/roadmap slide with next microservice and platform steps.
+source/asset requirements:
+- Use local repository files as source of truth: docker-compose.yml, api-gateway/nginx.conf, backend outbox code, worker/service code, README.
+- Use user-provided verification output for gateway header, successful API calls, notification logs, audit_events, and outbox_events.
+brand constraints:
+- CineRent is treated as the project/system name; no external brand assets.
+- Local movie poster assets may be used as visual proof of app domain.
+QA gates:
+- Every technical claim must point to a diagram, configuration excerpt, table, or observed result.
+- Diagram direction must match actual dependency/event flow.
+- PostgreSQL remains the primary database; MongoDB is not introduced.
+known missing inputs:
+- No university/company template supplied, so the deck uses a clean technical presentation system.

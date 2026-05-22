@@ -1,5 +1,6 @@
 from app.repositories.rental_repository import RentalRepository
 from app.repositories.movie_repository import MovieRepository
+from app.messaging.event_outbox import enqueue_event
 
 rental_repo = RentalRepository()
 movie_repo = MovieRepository()
@@ -18,8 +19,11 @@ def rent_movie(user_id, movie_id):
 
     # Utwórz wypożyczenie
     rental = rental_repo.create_rental(user_id, movie_id, rental_days=14)
+    rental_data = rental.serialize()
 
-    return rental.serialize()
+    enqueue_event("rental.created", rental_data)
+
+    return rental_data
 
 
 def get_my_active_rentals(user_id):
@@ -49,6 +53,9 @@ def return_movie(rental_id, user_id):
         raise ValueError("Film został już zwrócony")
 
     success = rental_repo.return_rental(rental_id)
+    if success:
+        enqueue_event("rental.returned", rental.serialize())
+
     return success
 
 

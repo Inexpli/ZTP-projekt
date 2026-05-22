@@ -1,6 +1,7 @@
 from app.repositories.user_repository import UserRepository
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
+from app.messaging.event_outbox import enqueue_event
 
 user_repo = UserRepository()
 
@@ -25,7 +26,10 @@ def register_user(data):
         username=data["username"], email=data["email"], password=data["password"]
     )
 
-    return user.serialize()
+    user_data = user.serialize()
+    enqueue_event("auth.registered", user_data)
+
+    return user_data
 
 
 def login_user(username, password):
@@ -42,7 +46,10 @@ def login_user(username, password):
         identity=str(user.user_id), expires_delta=timedelta(days=1)
     )
 
-    return {"access_token": access_token, "user": user.serialize()}
+    user_data = user.serialize()
+    enqueue_event("auth.logged_in", user_data)
+
+    return {"access_token": access_token, "user": user_data}
 
 
 def get_current_user(user_id):

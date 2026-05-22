@@ -1,0 +1,12 @@
+1. CineRent evolved from a working VOD application into a containerized microservice-oriented system.
+2. The original value remains simple: browse movies, authenticate, rent, return, and view history.
+3. Docker Compose now runs the whole local platform as one reproducible environment.
+4. The API gateway centralizes traffic, routing, basic security headers, and rate limiting.
+5. Business events are emitted asynchronously instead of coupling backend requests to downstream services.
+6. The outbox pattern keeps event publication durable while PostgreSQL remains the source of truth.
+7. Notification-service proves event consumption with rental notifications.
+8. Audit-service proves cross-service persistence by storing events in audit_events.
+9. Observability and discovery services prepare the system for debugging and scaling.
+10. The API path was verified end-to-end through gateway headers, HTTP 200/201 requests, and published events.
+11. The architecture adds resilience and extensibility, while leaving clear production hardening work.
+12. The next step is tightening identity, traces, alerts, tests, and optional service discovery integration.

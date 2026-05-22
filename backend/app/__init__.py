@@ -13,7 +13,7 @@ def create_app():
     logging.basicConfig(level=logging.INFO)
     app.logger.setLevel(logging.INFO)
 
-    db_password = os.environ.get("DB_PASSWORD", "ZAQ!2wsx")
+    db_password = os.environ.get("DB_PASSWORD", "postgres")
     
     local_db_url = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/ztp_projekt?client_encoding=utf8"
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", local_db_url)
@@ -49,6 +49,15 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+
+    with app.app_context():
+        try:
+            from app.messaging.event_outbox import ensure_outbox_table
+
+            ensure_outbox_table()
+        except Exception as exc:
+            db.session.rollback()
+            app.logger.warning("Nie udało się zainicjalizować outbox_events: %s", exc)
 
     # ==================== BLUEPRINTY ====================
     from app.routes.auth import auth_bp
