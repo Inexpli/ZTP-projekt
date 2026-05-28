@@ -1,4 +1,4 @@
-import os
+﻿import os
 from werkzeug.utils import secure_filename
 import uuid
 from flask import current_app
@@ -12,19 +12,18 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# utils/file_handlers.py
 def save_user_image(file, username, image_type, position=None):
     """
-    Zapisuje zdjęcie użytkownika w odpowiednim folderze.
+    Zapisuje zdjÄ™cie uĹĽytkownika w odpowiednim folderze.
 
     Args:
         file: Obiekt pliku z request.files
-        username: Nazwa użytkownika
-        image_type: Typ zdjęcia ('profile_picture' lub 'background_image')
-        position: Słownik z pozycją x, y dla zdjęcia w tle
+        username: Nazwa uĹĽytkownika
+        image_type: Typ zdjÄ™cia ('profile_picture' lub 'background_image')
+        position: SĹ‚ownik z pozycjÄ… x, y dla zdjÄ™cia w tle
 
     Returns:
-        Słownik z ścieżką do pliku i pozycją
+        SĹ‚ownik z Ĺ›cieĹĽkÄ… do pliku i pozycjÄ…
     """
     if not file or file.filename == "":
         return None
@@ -35,13 +34,12 @@ def save_user_image(file, username, image_type, position=None):
     user_folder = os.path.join(current_app.root_path, UPLOAD_FOLDER, username)
     os.makedirs(user_folder, exist_ok=True)
 
-    # Usuń stare pliki
     for existing_file in os.listdir(user_folder):
         if existing_file.startswith(image_type):
             try:
                 os.remove(os.path.join(user_folder, existing_file))
             except Exception as e:
-                print(f"Błąd podczas usuwania starego pliku: {e}")
+                print(f"BĹ‚Ä…d podczas usuwania starego pliku: {e}")
 
     filename = secure_filename(file.filename)
     file_extension = filename.rsplit(".", 1)[1].lower() if "." in filename else "jpg"
@@ -52,7 +50,6 @@ def save_user_image(file, username, image_type, position=None):
     file.save(file_path)
     print(f"Zapisano plik: {file_path}")
 
-    # Zapisz pozycję do pliku JSON, jeśli podano
     if position and image_type == "background_image":
         position_file = os.path.join(
             user_folder, f"{image_type}_{unique_id}_position.json"

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import RentalModal from '../../components/RentalModal/RentalModal';
-import VideoModal from '../../components/VideoModal/VideoModal'; // Import VideoModal
+import VideoModal from '../../components/VideoModal/VideoModal';
 import { Movie, Actor, Director } from '../../rental-v2/types/index';
 import * as movieService from '../../services/movieService';
 import * as rentalService from '../../services/rentalService';
@@ -17,7 +17,7 @@ const MovieDetailPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isVideoOpen, setIsVideoOpen] = useState(false); // Stan dla VideoModal
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [rentingLoading, setRentingLoading] = useState(false);
     const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
     const [activeTab, setActiveTab] = useState<'cast' | 'directors'>('cast');
@@ -38,9 +38,9 @@ const MovieDetailPage: React.FC = () => {
                 }
             } catch (err: any) {
                 if (err.response?.status === 404) {
-                    setError('Film nie został znaleziony.');
+                    setError('Film nie zostaĹ‚ znaleziony.');
                 } else {
-                    setError('Nie udało się załadować danych.');
+                    setError('Nie udaĹ‚o siÄ™ zaĹ‚adowaÄ‡ danych.');
                 }
             } finally {
                 setLoading(false);
@@ -55,9 +55,9 @@ const MovieDetailPage: React.FC = () => {
             await rentalService.rentMovie(m.movie_id);
             setMovie(prev => prev ? { ...prev, available: false } : prev);
             setIsModalOpen(false);
-            showToast(`„${m.title}" wypożyczony na 14 dni!`, 'success');
+            showToast(`â€ž${m.title}" wypoĹĽyczony na 14 dni!`, 'success');
         } catch (err: any) {
-            const msg = err.response?.data?.error || 'Nie udało się wypożyczyć.';
+            const msg = err.response?.data?.error || 'Nie udaĹ‚o siÄ™ wypoĹĽyczyÄ‡.';
             showToast(msg, 'error');
             if (err.response?.status === 401) navigate('/login');
         } finally {
@@ -101,9 +101,9 @@ const MovieDetailPage: React.FC = () => {
             <div className={styles.page}>
                 <Navbar />
                 <div className={styles.errorState}>
-                    <span>🎬</span>
+                    <span>đźŽ¬</span>
                     <p>{error || 'Film nie istnieje'}</p>
-                    <button onClick={() => navigate('/')}>Wróć do katalogu</button>
+                    <button onClick={() => navigate('/')}>WrĂłÄ‡ do katalogu</button>
                 </div>
             </div>
         );
@@ -124,7 +124,7 @@ const MovieDetailPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -60 }}
                     >
-                        <span className={styles.toastIcon}>{toast.type === 'success' ? '✓' : '✕'}</span>
+                        <span className={styles.toastIcon}>{toast.type === 'success' ? 'âś“' : 'âś•'}</span>
                         {toast.msg}
                     </motion.div>
                 )}
@@ -160,7 +160,7 @@ const MovieDetailPage: React.FC = () => {
                                 />
                             ) : (
                                 <div className={styles.posterFallback}>
-                                    <span>🎬</span>
+                                    <span>đźŽ¬</span>
                                 </div>
                             )}
                         </div>
@@ -176,19 +176,18 @@ const MovieDetailPage: React.FC = () => {
                                         <circle cx="12" cy="12" r="10" />
                                         <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
                                     </svg>
-                                    Niedostępny
+                                    NiedostÄ™pny
                                 </>
                             ) : (
                                 <>
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                                         <polygon points="5,3 19,12 5,21" />
                                     </svg>
-                                    Wypożycz · 14 dni
+                                    WypoĹĽycz Â· 14 dni
                                 </>
                             )}
                         </button>
 
-                        {/* Poprawiony przycisk zwiastuna otwierający VideoModal */}
                         {movie.trailer_url && (
                             <button
                                 type="button"
@@ -209,7 +208,7 @@ const MovieDetailPage: React.FC = () => {
                             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                 <polyline points="15,18 9,12 15,6" />
                             </svg>
-                            Wróć
+                            WrĂłÄ‡
                         </button>
 
                         {movie.genres.length > 0 && (
@@ -226,7 +225,7 @@ const MovieDetailPage: React.FC = () => {
                             {releaseYear && <span>{releaseYear}</span>}
                             {movie.duration_minutes && (
                                 <>
-                                    <span className={styles.dot}>·</span>
+                                    <span className={styles.dot}>Â·</span>
                                     <span>
                                         {Math.floor(movie.duration_minutes / 60)}h{' '}
                                         {movie.duration_minutes % 60}m
@@ -235,7 +234,7 @@ const MovieDetailPage: React.FC = () => {
                             )}
                             {movie.country && (
                                 <>
-                                    <span className={styles.dot}>·</span>
+                                    <span className={styles.dot}>Â·</span>
                                     <span>{movie.country}</span>
                                 </>
                             )}
@@ -243,7 +242,7 @@ const MovieDetailPage: React.FC = () => {
 
                         {hasDirectors && (
                             <div className={styles.directorsRow}>
-                                <span className={styles.metaLabel}>Reżyseria</span>
+                                <span className={styles.metaLabel}>ReĹĽyseria</span>
                                 <span className={styles.metaValue}>
                                     {movie.directors.map(d => d.name).join(', ')}
                                 </span>
@@ -264,7 +263,7 @@ const MovieDetailPage: React.FC = () => {
                         <div className={styles.availabilityRow}>
                             <span className={`${styles.availDot} ${movie.available === false ? styles.availDotNo : styles.availDotYes}`} />
                             <span className={styles.metaValue}>
-                                {movie.available === false ? 'Aktualnie wypożyczony' : 'Dostępny'}
+                                {movie.available === false ? 'Aktualnie wypoĹĽyczony' : 'DostÄ™pny'}
                             </span>
                         </div>
                     </div>
@@ -292,7 +291,7 @@ const MovieDetailPage: React.FC = () => {
                                     className={`${styles.castTab} ${activeTab === 'directors' ? styles.castTabActive : ''}`}
                                     onClick={() => setActiveTab('directors')}
                                 >
-                                    Reżyseria
+                                    ReĹĽyseria
                                     <span className={styles.castTabCount}>{movie.directors.length}</span>
                                 </button>
                             )}
@@ -325,7 +324,7 @@ const MovieDetailPage: React.FC = () => {
                                             <PersonCard
                                                 key={director.id}
                                                 person={director}
-                                                subtitle="Reżyseria"
+                                                subtitle="ReĹĽyseria"
                                                 onClick={() => setSelectedPerson(director)}
                                             />
                                         ))}
@@ -346,7 +345,6 @@ const MovieDetailPage: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* Modal wypożyczenia */}
             <RentalModal
                 movie={movie}
                 isOpen={isModalOpen}
@@ -355,7 +353,6 @@ const MovieDetailPage: React.FC = () => {
                 loading={rentingLoading}
             />
 
-            {/* Dodany VideoModal */}
             <VideoModal
                 isOpen={isVideoOpen}
                 onClose={() => setIsVideoOpen(false)}
@@ -366,7 +363,6 @@ const MovieDetailPage: React.FC = () => {
     );
 };
 
-// ─── PersonCard ──────────────────────────────────────────────────────────────
 interface PersonCardProps {
     person: Actor | Director;
     subtitle?: string | null;
@@ -414,7 +410,6 @@ const PersonCard: React.FC<PersonCardProps> = ({ person, subtitle, onClick }) =>
     );
 };
 
-// ─── PersonBioModal ───────────────────────────────────────────────────────────
 interface PersonBioModalProps {
     person: Actor | Director;
     onClose: () => void;
@@ -472,7 +467,7 @@ const PersonBioModal: React.FC<PersonBioModalProps> = ({ person, onClose }) => {
                             <p className={styles.bioRole}>jako {person.role}</p>
                         )}
                         {!isActor(person) && (
-                            <p className={styles.bioRole}>Reżyseria</p>
+                            <p className={styles.bioRole}>ReĹĽyseria</p>
                         )}
                     </div>
                 </div>
@@ -492,8 +487,8 @@ const PersonBioModal: React.FC<PersonBioModalProps> = ({ person, onClose }) => {
                     )}
                     {person.gender && (
                         <div className={styles.bioMetaRow}>
-                            <span className={styles.bioMetaLabel}>Płeć</span>
-                            <span className={styles.bioMetaValue}>{person.gender === 'M' ? 'Mężczyzna' : 'Kobieta'}</span>
+                            <span className={styles.bioMetaLabel}>PĹ‚eÄ‡</span>
+                            <span className={styles.bioMetaValue}>{person.gender === 'M' ? 'MÄ™ĹĽczyzna' : 'Kobieta'}</span>
                         </div>
                     )}
                 </div>

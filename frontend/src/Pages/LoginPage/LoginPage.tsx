@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import * as authService from '../../services/authService';
 import styles from './LoginPage.module.css';
 
-// Jeśli masz PasswordStrengthMeter — podepnij tutaj
-// import PasswordStrengthMeter from './components/PasswordStrengthMeter/PasswordStrengthMeter';
 
 const LoginPage: React.FC = () => {
     const { login, user } = useAuth();
@@ -32,20 +30,17 @@ const LoginPage: React.FC = () => {
         setConfirmPasswordError('');
 
         if (!isLoginMode && password !== confirmPassword) {
-            setConfirmPasswordError('Hasła nie są takie same');
+            setConfirmPasswordError('HasĹ‚a nie sÄ… takie same');
             return;
         }
 
         setLoading(true);
         try {
             if (isLoginMode) {
-                // Logowanie — POST /auth/login
                 const data = await authService.login(username, password);
                 const success = login(data.user, data.access_token);
                 if (success) navigate('/', { replace: true });
             } else {
-                // Rejestracja — POST /auth/register
-                // Backend zwraca {message, user} bez tokenu — trzeba od razu zalogować
                 await authService.register(username, email, password);
                 const data = await authService.login(username, password);
                 const success = login(data.user, data.access_token);
@@ -54,15 +49,15 @@ const LoginPage: React.FC = () => {
         } catch (err: any) {
             const status = err.response?.status;
             if (status === 401) {
-                setError('Niepoprawny login lub hasło.');
+                setError('Niepoprawny login lub hasĹ‚o.');
             } else if (status === 403) {
-                setError('Twoje konto zostało zawieszone lub dezaktywowane.');
+                setError('Twoje konto zostaĹ‚o zawieszone lub dezaktywowane.');
             } else if (status === 400) {
-                setError(err.response?.data?.error || 'Błąd walidacji danych.');
-            } else if (status === 409 || err.response?.data?.error?.includes('zajęta') || err.response?.data?.error?.includes('używany')) {
-                setError('Email albo nazwa użytkownika jest już zajęta.');
+                setError(err.response?.data?.error || 'BĹ‚Ä…d walidacji danych.');
+            } else if (status === 409 || err.response?.data?.error?.includes('zajÄ™ta') || err.response?.data?.error?.includes('uĹĽywany')) {
+                setError('Email albo nazwa uĹĽytkownika jest juĹĽ zajÄ™ta.');
             } else {
-                setError(err.response?.data?.error || err.message || 'Wystąpił nieznany błąd.');
+                setError(err.response?.data?.error || err.message || 'WystÄ…piĹ‚ nieznany bĹ‚Ä…d.');
             }
         } finally {
             setLoading(false);
@@ -82,7 +77,6 @@ const LoginPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                {/* Lewa strona */}
                 <div className={`${styles.leftSide} ${!isLoginMode ? styles.logoSide : styles.formSide}`}>
                     <AnimatePresence mode="wait">
                         {isLoginMode ? (
@@ -94,13 +88,13 @@ const LoginPage: React.FC = () => {
                                 transition={{ duration: 0.5 }}
                                 className={styles.formContainer}
                             >
-                                <h1>Zaloguj się</h1>
-                                <p className={styles.subtitle}>Witaj ponownie! Zaloguj się do swojego konta</p>
+                                <h1>Zaloguj siÄ™</h1>
+                                <p className={styles.subtitle}>Witaj ponownie! Zaloguj siÄ™ do swojego konta</p>
                                 {error && <div className={styles.errorMessage}>{error}</div>}
 
                                 <form onSubmit={handleSubmit} className={styles.form}>
                                     <div className={styles.formGroup}>
-                                        <label>Nazwa użytkownika</label>
+                                        <label>Nazwa uĹĽytkownika</label>
                                         <input
                                             type="text"
                                             value={username}
@@ -111,7 +105,7 @@ const LoginPage: React.FC = () => {
                                         />
                                     </div>
                                     <div className={styles.formGroup}>
-                                        <label>Hasło</label>
+                                        <label>HasĹ‚o</label>
                                         <input
                                             type="password"
                                             value={password}
@@ -122,14 +116,14 @@ const LoginPage: React.FC = () => {
                                         />
                                     </div>
                                     <button type="submit" className={styles.submitButton} disabled={loading}>
-                                        {loading ? 'Logowanie...' : 'Zaloguj się'}
+                                        {loading ? 'Logowanie...' : 'Zaloguj siÄ™'}
                                     </button>
                                 </form>
 
                                 <p className={styles.toggleText}>
                                     Nie masz konta?{' '}
                                     <button type="button" className={styles.toggleButton} onClick={toggleMode}>
-                                        Zarejestruj się
+                                        Zarejestruj siÄ™
                                     </button>
                                 </p>
                             </motion.div>
@@ -143,16 +137,15 @@ const LoginPage: React.FC = () => {
                                 className={styles.logoContainer}
                             >
                                 <div className={styles.logo}>
-                                    <span className={styles.logoIcon}>🎬</span>
+                                    <span className={styles.logoIcon}>đźŽ¬</span>
                                     <h2 className={styles.serviceName}>CineRent</h2>
-                                    <p className={styles.logoTagline}>Twoja cyfrowa wypożyczalnia filmów</p>
+                                    <p className={styles.logoTagline}>Twoja cyfrowa wypoĹĽyczalnia filmĂłw</p>
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
 
-                {/* Prawa strona */}
                 <div className={`${styles.rightSide} ${isLoginMode ? styles.logoSide : styles.formSide}`}>
                     <AnimatePresence mode="wait">
                         {isLoginMode ? (
@@ -165,9 +158,9 @@ const LoginPage: React.FC = () => {
                                 className={styles.logoContainer}
                             >
                                 <div className={styles.logo}>
-                                    <span className={styles.logoIcon}>🎬</span>
+                                    <span className={styles.logoIcon}>đźŽ¬</span>
                                     <h2 className={styles.serviceName}>CineRent</h2>
-                                    <p className={styles.logoTagline}>Twoja cyfrowa wypożyczalnia filmów</p>
+                                    <p className={styles.logoTagline}>Twoja cyfrowa wypoĹĽyczalnia filmĂłw</p>
                                 </div>
                             </motion.div>
                         ) : (
@@ -179,13 +172,13 @@ const LoginPage: React.FC = () => {
                                 transition={{ duration: 0.5 }}
                                 className={styles.formContainer}
                             >
-                                <h1>Zarejestruj się</h1>
-                                <p className={styles.subtitle}>Utwórz konto i zacznij wypożyczać filmy</p>
+                                <h1>Zarejestruj siÄ™</h1>
+                                <p className={styles.subtitle}>UtwĂłrz konto i zacznij wypoĹĽyczaÄ‡ filmy</p>
                                 {error && <div className={styles.errorMessage}>{error}</div>}
 
                                 <form onSubmit={handleSubmit} className={styles.form}>
                                     <div className={styles.formGroup}>
-                                        <label>Nazwa użytkownika</label>
+                                        <label>Nazwa uĹĽytkownika</label>
                                         <input
                                             type="text"
                                             value={username}
@@ -207,7 +200,7 @@ const LoginPage: React.FC = () => {
                                         />
                                     </div>
                                     <div className={styles.formGroup}>
-                                        <label>Hasło</label>
+                                        <label>HasĹ‚o</label>
                                         <input
                                             type="password"
                                             value={password}
@@ -216,10 +209,9 @@ const LoginPage: React.FC = () => {
                                             className={styles.input}
                                             autoComplete="new-password"
                                         />
-                                        {/* <PasswordStrengthMeter password={password} /> */}
                                     </div>
                                     <div className={styles.formGroup}>
-                                        <label>Potwierdź hasło</label>
+                                        <label>PotwierdĹş hasĹ‚o</label>
                                         <input
                                             type="password"
                                             value={confirmPassword}
@@ -233,14 +225,14 @@ const LoginPage: React.FC = () => {
                                         )}
                                     </div>
                                     <button type="submit" className={styles.submitButton} disabled={loading}>
-                                        {loading ? 'Rejestracja...' : 'Zarejestruj się'}
+                                        {loading ? 'Rejestracja...' : 'Zarejestruj siÄ™'}
                                     </button>
                                 </form>
 
                                 <p className={styles.toggleText}>
-                                    Masz już konto?{' '}
+                                    Masz juĹĽ konto?{' '}
                                     <button type="button" className={styles.toggleButton} onClick={toggleMode}>
-                                        Zaloguj się
+                                        Zaloguj siÄ™
                                     </button>
                                 </p>
                             </motion.div>

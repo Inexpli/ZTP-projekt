@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
@@ -11,24 +11,20 @@ import * as rentalService from '../../services/rentalService';
 import * as genreService from '../../services/genreService';
 import styles from './HomePage.module.css';
 
-// ─── KOMPONENT GŁÓWNY: HomePage ──────────────────────────────────────────────
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
 
-    // Stany danych
     const [movies, setMovies] = useState<Movie[]>([]);
     const [pagination, setPagination] = useState<PaginationMeta | null>(null);
     const [allGenres, setAllGenres] = useState<Genre[]>([]);
     const [loadingMovies, setLoadingMovies] = useState(true);
     const [moviesError, setMoviesError] = useState('');
 
-    // Stany filtrów i wyszukiwania
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const [selectedGenreId, setSelectedGenreId] = useState<number | null>(null);
     const [page, setPage] = useState(1);
 
-    // Stany wypożyczeń i UI
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -36,21 +32,18 @@ const HomePage: React.FC = () => {
     const [activeRentalCount, setActiveRentalCount] = useState(0);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-    // ─── 1. Pobierz wszystkie gatunki (raz przy starcie) ───────────────────
     useEffect(() => {
         genreService.getGenres()
             .then(res => setAllGenres(res.genres))
             .catch(() => { });
     }, []);
 
-    // ─── 2. Pobierz liczbę aktywnych wypożyczeń ────────────────────────────
     useEffect(() => {
         rentalService.getMyActiveRentals()
             .then(res => setActiveRentalCount(res.rentals.length))
             .catch(() => { });
     }, []);
 
-    // ─── 3. Filtrowanie gatunków (Tylko te, które mają przypisane filmy) ────
     const activeGenres = useMemo(() => {
         if (movies.length === 0) return [];
         const usedGenreIds = new Set();
@@ -60,7 +53,6 @@ const HomePage: React.FC = () => {
         return allGenres.filter(g => usedGenreIds.has(g.id));
     }, [allGenres, movies]);
 
-    // ─── 4. Debounce wyszukiwania ──────────────────────────────────────────
     useEffect(() => {
         const t = setTimeout(() => {
             setSearch(searchInput);
@@ -69,7 +61,6 @@ const HomePage: React.FC = () => {
         return () => clearTimeout(t);
     }, [searchInput]);
 
-    // ─── 5. Pobieranie filmów ──────────────────────────────────────────────
     const fetchMovies = useCallback(async () => {
         setLoadingMovies(true);
         setMoviesError('');
@@ -86,7 +77,7 @@ const HomePage: React.FC = () => {
             setMovies(processedMovies);
             setPagination(result.pagination);
         } catch (err) {
-            setMoviesError('Nie udało się załadować filmów. Spróbuj ponownie.');
+            setMoviesError('Nie udaĹ‚o siÄ™ zaĹ‚adowaÄ‡ filmĂłw. SprĂłbuj ponownie.');
         } finally {
             setLoadingMovies(false);
         }
@@ -96,7 +87,6 @@ const HomePage: React.FC = () => {
         fetchMovies();
     }, [fetchMovies]);
 
-    // ─── 6. Obsługa wypożyczeń ──────────────────────────────────────────────
     const handleRent = (movie: Movie) => {
         setSelectedMovie(movie);
         setIsModalOpen(true);
@@ -111,9 +101,9 @@ const HomePage: React.FC = () => {
             );
             setActiveRentalCount(c => c + 1);
             setIsModalOpen(false);
-            showToast(`„${movie.title}" wypożyczony na 14 dni!`, 'success');
+            showToast(`â€ž${movie.title}" wypoĹĽyczony na 14 dni!`, 'success');
         } catch (err: any) {
-            const msg = err.response?.data?.error || 'Nie udało się wypożyczyć.';
+            const msg = err.response?.data?.error || 'Nie udaĹ‚o siÄ™ wypoĹĽyczyÄ‡.';
             showToast(msg, 'error');
             if (err.response?.status === 401) navigate('/login');
         } finally {
@@ -140,7 +130,6 @@ const HomePage: React.FC = () => {
                 onCartClick={() => navigate('/rentals')}
             />
 
-            {/* ─── Hero ─── */}
             {!loadingMovies && featuredMovie && (
                 <section className={styles.hero}>
                     <div className={styles.heroBackground}>
@@ -176,14 +165,14 @@ const HomePage: React.FC = () => {
                                 )}
                                 {featuredMovie.duration_minutes && (
                                     <>
-                                        <span className={styles.heroDivider}>·</span>
+                                        <span className={styles.heroDivider}>Â·</span>
                                         <span>{Math.floor(featuredMovie.duration_minutes / 60)}h {featuredMovie.duration_minutes % 60}m</span>
                                     </>
                                 )}
                                 {featuredMovie.directors && featuredMovie.directors.length > 0 && (
                                     <>
-                                        <span className={styles.heroDivider}>·</span>
-                                        <span>reż. {featuredMovie.directors[0].name}</span>
+                                        <span className={styles.heroDivider}>Â·</span>
+                                        <span>reĹĽ. {featuredMovie.directors[0].name}</span>
                                     </>
                                 )}
                             </div>
@@ -201,7 +190,7 @@ const HomePage: React.FC = () => {
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                                         <polygon points="5,3 19,12 5,21" />
                                     </svg>
-                                    {featuredMovie.available === false ? 'Niedostępny' : 'Wypożycz teraz · 14 dni'}
+                                    {featuredMovie.available === false ? 'NiedostÄ™pny' : 'WypoĹĽycz teraz Â· 14 dni'}
                                 </button>
 
                                 {featuredMovie.trailer_url && (
@@ -217,7 +206,7 @@ const HomePage: React.FC = () => {
                                     className={styles.heroDetailsBtn}
                                     onClick={() => navigate(`/movie/${featuredMovie.movie_id}`)}
                                 >
-                                    Więcej informacji
+                                    WiÄ™cej informacji
                                 </button>
                             </div>
                         </motion.div>
@@ -233,7 +222,7 @@ const HomePage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -60 }}
                     >
-                        <span className={styles.toastIcon}>{toast.type === 'success' ? '✓' : '✕'}</span>
+                        <span className={styles.toastIcon}>{toast.type === 'success' ? 'âś“' : 'âś•'}</span>
                         {toast.message}
                     </motion.div>
                 )}
@@ -243,9 +232,9 @@ const HomePage: React.FC = () => {
                 <div className={styles.catalogInner}>
                     <div className={styles.catalogHeader}>
                         <div>
-                            <h2 className={styles.catalogTitle}>Katalog filmów</h2>
+                            <h2 className={styles.catalogTitle}>Katalog filmĂłw</h2>
                             {pagination && (
-                                <p className={styles.catalogCount}>{pagination.total} filmów</p>
+                                <p className={styles.catalogCount}>{pagination.total} filmĂłw</p>
                             )}
                         </div>
                         <div className={styles.searchWrapper}>
@@ -260,7 +249,7 @@ const HomePage: React.FC = () => {
                                 className={styles.searchInput}
                             />
                             {searchInput && (
-                                <button className={styles.searchClear} onClick={() => setSearchInput('')}>×</button>
+                                <button className={styles.searchClear} onClick={() => setSearchInput('')}>Ă—</button>
                             )}
                         </div>
                     </div>
@@ -300,14 +289,14 @@ const HomePage: React.FC = () => {
                         </div>
                     ) : moviesError ? (
                         <div className={styles.errorState}>
-                            <span>⚠️</span>
+                            <span>âš ď¸Ź</span>
                             <p>{moviesError}</p>
-                            <button className={styles.retryBtn} onClick={fetchMovies}>Spróbuj ponownie</button>
+                            <button className={styles.retryBtn} onClick={fetchMovies}>SprĂłbuj ponownie</button>
                         </div>
                     ) : movies.length === 0 ? (
                         <div className={styles.emptyState}>
-                            <span>🎬</span>
-                            <p>Nie znaleziono filmów{search ? ` dla „${search}"` : ''}</p>
+                            <span>đźŽ¬</span>
+                            <p>Nie znaleziono filmĂłw{search ? ` dla â€ž${search}"` : ''}</p>
                         </div>
                     ) : (
                         <div className={styles.moviesGrid}>
@@ -325,9 +314,9 @@ const HomePage: React.FC = () => {
 
                     {pagination && pagination.total_pages > 1 && !loadingMovies && (
                         <div className={styles.pagination}>
-                            <button className={styles.pageBtn} onClick={() => setPage(p => p - 1)} disabled={!pagination.has_prev}>← Poprzednia</button>
+                            <button className={styles.pageBtn} onClick={() => setPage(p => p - 1)} disabled={!pagination.has_prev}>â† Poprzednia</button>
                             <span className={styles.pageInfo}>Strona {pagination.page} / {pagination.total_pages}</span>
-                            <button className={styles.pageBtn} onClick={() => setPage(p => p + 1)} disabled={!pagination.has_next}>Następna →</button>
+                            <button className={styles.pageBtn} onClick={() => setPage(p => p + 1)} disabled={!pagination.has_next}>NastÄ™pna â†’</button>
                         </div>
                     )}
                 </div>
@@ -341,12 +330,11 @@ const HomePage: React.FC = () => {
                 loading={rentingLoading}
             />
 
-            {/* MODAL WIDEO */}
             <VideoModal
                 isOpen={isVideoOpen}
                 onClose={() => setIsVideoOpen(false)}
-                trailerUrl={featuredMovie?.trailer_url || ''} // Zmieniono z videoUrl na trailerUrl
-                movieTitle={featuredMovie?.title || ''}       // Dodano brakujący wymagany prop
+                trailerUrl={featuredMovie?.trailer_url || ''}
+                movieTitle={featuredMovie?.title || ''}
             />
         </div>
     );

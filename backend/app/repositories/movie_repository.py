@@ -1,6 +1,6 @@
-from app.extensions import db
+﻿from app.extensions import db
 from app.models.movie import Movie
-from app.models.genre import Genre  # <-- Dodany import dla filtrowania
+from app.models.genre import Genre
 from sqlalchemy import or_
 
 
@@ -11,11 +11,9 @@ class MovieRepository:
     def get_all(self):
         return self.session.query(Movie).order_by(Movie.title.asc()).all()
 
-    # DODANO argument genre_id=None
     def get_paginated(self, page=1, per_page=20, search=None, genre_id=None):
         query = self.session.query(Movie)
 
-        # 1. Filtrowanie po wyszukiwaniu (tytuł lub opis)
         if search and search.strip():
             search_term = f"%{search.strip()}%"
             query = query.filter(
@@ -24,9 +22,7 @@ class MovieRepository:
                 )
             )
 
-        # 2. DODANO: Filtrowanie po gatunku (genre_id)
         if genre_id:
-            # Używamy .any(), żeby sprawdzić relację many-to-many
             query = query.filter(Movie.genres.any(Genre.genre_id == genre_id))
 
         total = query.count()

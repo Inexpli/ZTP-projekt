@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+﻿from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from app.services.actor_service import (
     get_actors_paginated,
@@ -13,7 +13,6 @@ from app.services.actor_service import (
 actors_bp = Blueprint("actors", __name__)
 
 
-# GET /actors/?page=&per_page=&search=
 @actors_bp.route("/", methods=["GET"])
 def get_actors():
     page = request.args.get("page", 1, type=int)
@@ -22,17 +21,15 @@ def get_actors():
     return jsonify(get_actors_paginated(page, per_page, search)), 200
 
 
-# GET /actors/<id>?include_movies=true
 @actors_bp.route("/<int:actor_id>", methods=["GET"])
 def get_actor(actor_id):
     include_movies = request.args.get("include_movies", "false").lower() == "true"
     actor = get_actor_by_id(actor_id, include_movies=include_movies)
     if not actor:
-        return jsonify({"error": "Aktor nie został znaleziony"}), 404
+        return jsonify({"error": "Aktor nie zostaĹ‚ znaleziony"}), 404
     return jsonify(actor), 200
 
 
-# POST /actors/  (staff/admin)
 @actors_bp.route("/", methods=["POST"])
 @jwt_required()
 def add_actor():
@@ -42,10 +39,9 @@ def add_actor():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:
-        return jsonify({"error": "Błąd podczas dodawania aktora"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas dodawania aktora"}), 500
 
 
-# PUT /actors/<id>
 @actors_bp.route("/<int:actor_id>", methods=["PUT"])
 @jwt_required()
 def edit_actor(actor_id):
@@ -53,24 +49,21 @@ def edit_actor(actor_id):
         data = request.get_json()
         updated = update_actor(actor_id, data)
         if not updated:
-            return jsonify({"error": "Aktor nie został znaleziony"}), 404
+            return jsonify({"error": "Aktor nie zostaĹ‚ znaleziony"}), 404
         return jsonify({"message": "Zaktualizowano", "actor": updated}), 200
     except Exception:
-        return jsonify({"error": "Błąd podczas aktualizacji"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas aktualizacji"}), 500
 
 
-# DELETE /actors/<id>
 @actors_bp.route("/<int:actor_id>", methods=["DELETE"])
 @jwt_required()
 def remove_actor(actor_id):
     if delete_actor(actor_id):
-        return jsonify({"message": "Aktor usunięty"}), 200
-    return jsonify({"error": "Aktor nie został znaleziony"}), 404
+        return jsonify({"message": "Aktor usuniÄ™ty"}), 200
+    return jsonify({"error": "Aktor nie zostaĹ‚ znaleziony"}), 404
 
 
-# ─── Przypisanie aktora do filmu ──────────────────────────────────────────────
 
-# POST /actors/movie/<movie_id>  body: {actor_id, role}
 @actors_bp.route("/movie/<int:movie_id>", methods=["POST"])
 @jwt_required()
 def assign_actor(movie_id):
@@ -83,17 +76,16 @@ def assign_actor(movie_id):
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:
-        return jsonify({"error": "Błąd podczas przypisywania"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas przypisywania"}), 500
 
 
-# DELETE /actors/movie/<movie_id>/<actor_id>
 @actors_bp.route("/movie/<int:movie_id>/<int:actor_id>", methods=["DELETE"])
 @jwt_required()
 def unassign_actor(movie_id, actor_id):
     try:
         remove_actor_from_movie(movie_id, actor_id)
-        return jsonify({"message": "Aktor usunięty z obsady"}), 200
+        return jsonify({"message": "Aktor usuniÄ™ty z obsady"}), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
     except Exception:
-        return jsonify({"error": "Błąd podczas usuwania"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas usuwania"}), 500

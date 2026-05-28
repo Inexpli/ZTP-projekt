@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
 
 :root {
     --gold: #d4a350;
@@ -17,7 +17,6 @@
     font-family: 'Karla', sans-serif;
 }
 
-/* ─── Toast ─── */
 .toast {
     position: fixed;
     top: 90px;
@@ -55,7 +54,6 @@
     color: #e08080;
 }
 
-/* ─── Hero background ─── */
 .hero {
     position: fixed;
     inset: 0;
@@ -80,7 +78,6 @@
     );
 }
 
-/* ─── Container ─── */
 .container {
     position: relative;
     z-index: 1;
@@ -89,7 +86,6 @@
     padding: 100px 40px 80px;
 }
 
-/* ─── Main section (poster + info) ─── */
 .mainSection {
     display: grid;
     grid-template-columns: 240px 1fr;
@@ -98,7 +94,6 @@
     align-items: start;
 }
 
-/* ─── Poster column ─── */
 .posterCol {
     display: flex;
     flex-direction: column;
@@ -185,7 +180,6 @@
     color: var(--cream);
 }
 
-/* ─── Info column ─── */
 .infoCol {
     padding-top: 8px;
 }
@@ -304,7 +298,6 @@
     box-shadow: 0 0 8px rgba(200, 70, 70, 0.4);
 }
 
-/* ─── Cast section ─── */
 .castSection {
     border-top: 1px solid var(--border);
     padding-top: 48px;
@@ -354,7 +347,6 @@
     color: var(--gold);
 }
 
-/* ─── Person grid ─── */
 .personGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -442,7 +434,6 @@
     color: rgba(212,163,80,0.5);
 }
 
-/* ─── Bio modal (slide-in panel) ─── */
 .bioBackdrop {
     position: fixed;
     inset: 0;
@@ -578,7 +569,6 @@
     color: rgba(235,225,205,0.55);
 }
 
-/* ─── Skeleton ─── */
 .skeletonHero {
     max-width: 1100px;
     margin: 100px auto 0;
@@ -611,7 +601,6 @@
     to { background-position: -200% 0; }
 }
 
-/* ─── Error ─── */
 .errorState {
     text-align: center;
     padding: 160px 20px 80px;
@@ -643,7 +632,6 @@
     background: rgba(212,163,80,0.18);
 }
 
-/* ─── Responsive ─── */
 @media (max-width: 768px) {
     .container { padding: 90px 20px 60px; }
     .mainSection {

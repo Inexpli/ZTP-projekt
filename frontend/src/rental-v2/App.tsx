@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import LoginPage from '../Pages/LoginPage/LoginPage';          // duża P
-import HomePage from '../Pages/HomePage/HomePage';             // duża P
-import MyRentalsPage from '../Pages/MyRentalsPage/MyRentalsPage'; // duża P
-import MovieDetailPage from '../Pages/MovieDetailPage/MovieDetailPage'; // duża P
-import ProfilePage from '../Pages/ProfilePage/ProfilePage'; // NOWOŚĆ
+import LoginPage from '../Pages/LoginPage/LoginPage';
+import HomePage from '../Pages/HomePage/HomePage';
+import MyRentalsPage from '../Pages/MyRentalsPage/MyRentalsPage';
+import MovieDetailPage from '../Pages/MovieDetailPage/MovieDetailPage';
+import ProfilePage from '../Pages/ProfilePage/ProfilePage';
 import './global.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -25,7 +25,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
                 letterSpacing: '1.5px',
                 textTransform: 'uppercase',
             }}>
-                Ładowanie...
+                Ĺadowanie...
             </div>
         );
     }
@@ -35,10 +35,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const AppRoutes: React.FC = () => (
     <Routes>
-        {/* Publiczne */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Chronione */}
         <Route path="/" element={
             <ProtectedRoute><HomePage /></ProtectedRoute>
         } />

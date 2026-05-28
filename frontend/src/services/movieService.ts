@@ -1,7 +1,6 @@
-import api from './api';
+﻿import api from './api';
 import { Movie, MoviesResponse } from '../rental-v2/types/index';
 
-// GET /movies/?page=&per_page=&search=&genre_id=
 export const getMovies = async (
     page = 1,
     per_page = 20,
@@ -15,7 +14,6 @@ export const getMovies = async (
     return response.data;
 };
 
-// GET /movies/<id>  — zwraca pełne dane z obsadą, reżyserami, gatunkami
 export const getMovieById = async (movieId: number): Promise<Movie> => {
     const response = await api.get(`/movies/${movieId}`);
     return response.data;

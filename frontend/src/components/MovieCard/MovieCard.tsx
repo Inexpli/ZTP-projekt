@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Movie } from '../../rental-v2/types/index';
 import styles from './MovieCard.module.css';
@@ -14,8 +14,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
     const [imgError, setImgError] = useState(false);
     const releaseYear = movie.release_date?.split('-')[0];
 
-    // Logika dostępności: film jest niedostępny, gdy backend 
-    // jawnie ustawi available: false LUB gdy is_rented jest true.
     const isUnavailable = movie.available === false || movie.is_rented === true;
 
     return (
@@ -36,7 +34,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                     />
                 ) : (
                     <div className={styles.posterFallback}>
-                        <span className={styles.posterIcon}>🎬</span>
+                        <span className={styles.posterIcon}>đźŽ¬</span>
                         <span className={styles.posterFallbackTitle}>{movie.title}</span>
                     </div>
                 )}
@@ -46,13 +44,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                         className={styles.detailsBtn}
                         onClick={e => { e.stopPropagation(); onDetails(movie); }}
                     >
-                        Szczegóły
+                        SzczegĂłĹ‚y
                     </button>
                 </div>
 
                 {isUnavailable && (
                     <div className={styles.unavailableBadge}>
-                        {movie.is_rented ? 'Wypożyczone' : 'Niedostępny'}
+                        {movie.is_rented ? 'WypoĹĽyczone' : 'NiedostÄ™pny'}
                     </div>
                 )}
 
@@ -62,7 +60,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
             </div>
 
             <div className={styles.info}>
-                {/* Gatunki */}
                 {movie.genres && movie.genres.length > 0 && (
                     <div className={styles.genres}>
                         {movie.genres.slice(0, 2).map(g => (
@@ -82,9 +79,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                             ? `${Math.floor(movie.duration_minutes / 60)}h ${movie.duration_minutes % 60}m`
                             : null,
                         movie.directors?.[0]?.name
-                            ? `reż. ${movie.directors[0].name}`
+                            ? `reĹĽ. ${movie.directors[0].name}`
                             : null,
-                    ].filter(Boolean).join(' · ')}
+                    ].filter(Boolean).join(' Â· ')}
                 </p>
 
                 {movie.description && (
@@ -97,10 +94,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onRent, onDetails, index =
                     disabled={isUnavailable}
                 >
                     {movie.is_rented
-                        ? 'Już wypożyczasz'
+                        ? 'JuĹĽ wypoĹĽyczasz'
                         : movie.available === false
-                            ? 'Niedostępny'
-                            : 'Wypożycz — 14 dni'}
+                            ? 'NiedostÄ™pny'
+                            : 'WypoĹĽycz â€” 14 dni'}
                 </button>
             </div>
         </motion.div>

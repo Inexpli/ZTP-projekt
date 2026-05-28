@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
 
 :root {
     --gold: #d4a350;
@@ -24,7 +24,6 @@
     width: 100%;
 }
 
-/* ─── Sides ──────────────────────────────────────────────────────────────── */
 .leftSide,
 .rightSide {
     flex: 1;
@@ -42,7 +41,6 @@
     overflow: hidden;
 }
 
-/* Decorative film strip lines */
 .logoSide::before {
     content: '';
     position: absolute;
@@ -73,7 +71,6 @@
     border-left: none;
 }
 
-/* ─── Logo ───────────────────────────────────────────────────────────────── */
 .logoContainer {
     display: flex;
     align-items: center;
@@ -112,7 +109,6 @@
     font-weight: 300;
 }
 
-/* ─── Form ───────────────────────────────────────────────────────────────── */
 .formContainer {
     width: 100%;
     max-width: 400px;
@@ -237,7 +233,6 @@
     color: var(--gold-light);
 }
 
-/* ─── Mobile ─────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .content {
         flex-direction: column;

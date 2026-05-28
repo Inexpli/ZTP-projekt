@@ -1,5 +1,4 @@
-// ─── User ───────────────────────────────────────────────────────────────────
-export interface User {
+﻿export interface User {
     user_id: number;
     username: string;
     email: string;
@@ -9,7 +8,6 @@ export interface User {
     created_at?: string;
 }
 
-// ─── Podrzędne modele (Relacje) ─────────────────────────────────────────────
 export interface Genre {
     id: number;
     name: string;
@@ -36,7 +34,6 @@ export interface Director {
     gender?: string;
 }
 
-// ─── Movie ──────────────────────────────────────────────────────────────────
 export interface Movie {
     movie_id: number;
     title: string;
@@ -57,7 +54,6 @@ export interface Movie {
     id?: number;
 }
 
-// ─── Rental ─────────────────────────────────────────────────────────────────
 export interface Rental {
     rental_id: number;
     user_id: number;
@@ -67,19 +63,18 @@ export interface Rental {
     poster_url?: string | null;
 
     rental_date: string;
-    due_date: string;          // Przywrócono z return_deadline
-    return_date?: string | null; // Przywrócono z returned_at
+    due_date: string;
+    return_date?: string | null;
 
     is_returned: boolean;
     is_overdue: boolean;
     status?: 'active' | 'returned' | 'overdue';
 }
 
-// ─── API Responses ──────────────────────────────────────────────────────────
 export interface PaginationMeta {
-    page: number;      // Dla HomePage.tsx
+    page: number;
     per_page: number;
-    total: number;     // Dla HomePage.tsx
+    total: number;
     total_pages: number;
     has_next: boolean;
     has_prev: boolean;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './VideoModal.module.css';
@@ -6,7 +6,7 @@ import styles from './VideoModal.module.css';
 interface VideoModalProps {
     isOpen: boolean;
     onClose: () => void;
-    trailerUrl: string; // Upewnij się, że w HomePage przekazujesz trailerUrl={featuredMovie.trailer_url}
+    trailerUrl: string;
     movieTitle: string;
 }
 
@@ -22,14 +22,13 @@ const VideoModal: React.FC<VideoModalProps> = ({
         return match ? match[1] : null;
     };
 
-    // Blokowanie scrollowania (Logika "Inżynierska" - zapobiega skokom strony)
     useEffect(() => {
         if (isOpen) {
             const scrollY = window.scrollY;
             document.body.style.position = 'fixed';
             document.body.style.top = `-${scrollY}px`;
             document.body.style.width = '100%';
-            document.body.style.overflowY = 'scroll'; // Zachowuje pasek przewijania, by strona nie "skakała"
+            document.body.style.overflowY = 'scroll';
         } else {
             const scrollY = document.body.style.top;
             document.body.style.position = '';
@@ -50,7 +49,6 @@ const VideoModal: React.FC<VideoModalProps> = ({
         };
     }, [isOpen]);
 
-    // Obsługa klawisza Escape
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -87,7 +85,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
                                 <h3 className={styles.title}>{movieTitle}</h3>
                             </div>
                             <button className={styles.closeButton} onClick={onClose} aria-label="Zamknij">
-                                ×
+                                Ă—
                             </button>
                         </div>
 

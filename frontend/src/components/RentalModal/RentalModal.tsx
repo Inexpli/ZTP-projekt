@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Movie } from '../../rental-v2/types/index';
-import VideoModal from '../VideoModal/VideoModal'; // Importujemy Twój nowy komponent
+import VideoModal from '../VideoModal/VideoModal';
 import styles from './RentalModal.module.css';
 
 interface RentalModalProps {
@@ -22,7 +22,7 @@ const RentalModal: React.FC<RentalModalProps> = ({
     loading = false,
 }) => {
     const [imgError, setImgError] = useState(false);
-    const [isVideoOpen, setIsVideoOpen] = useState(false); // Stan dla zwiastuna
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
 
     if (!movie) return null;
 
@@ -76,7 +76,7 @@ const RentalModal: React.FC<RentalModalProps> = ({
                                             onError={() => setImgError(true)}
                                         />
                                     ) : (
-                                        <div className={styles.posterFallback}>🎬</div>
+                                        <div className={styles.posterFallback}>đźŽ¬</div>
                                     )}
                                 </div>
 
@@ -92,7 +92,7 @@ const RentalModal: React.FC<RentalModalProps> = ({
                                             movie.country,
                                         ]
                                             .filter(Boolean)
-                                            .join(' · ')}
+                                            .join(' Â· ')}
                                     </p>
 
                                     {movie.description && (
@@ -109,7 +109,7 @@ const RentalModal: React.FC<RentalModalProps> = ({
                                             </svg>
                                         </div>
                                         <div>
-                                            <p className={styles.rentalInfoLabel}>Okres wypożyczenia</p>
+                                            <p className={styles.rentalInfoLabel}>Okres wypoĹĽyczenia</p>
                                             <p className={styles.rentalInfoValue}>14 dni</p>
                                         </div>
                                     </div>
@@ -137,10 +137,9 @@ const RentalModal: React.FC<RentalModalProps> = ({
                                                 <polyline points="20,6 9,17 4,12" />
                                             </svg>
                                         )}
-                                        {loading ? 'Przetwarzanie...' : 'Potwierdź wypożyczenie'}
+                                        {loading ? 'Przetwarzanie...' : 'PotwierdĹş wypoĹĽyczenie'}
                                     </button>
 
-                                    {/* TUTAJ ZMIANA: Zamiast linku <a>, używamy przycisku otwierającego modal */}
                                     {movie.trailer_url && (
                                         <button
                                             type="button"
@@ -161,7 +160,6 @@ const RentalModal: React.FC<RentalModalProps> = ({
                 )}
             </AnimatePresence>
 
-            {/* Renderujemy VideoModal poza AnimatePresence RentalModala, aby nie było konfliktów w DOM */}
             <VideoModal
                 isOpen={isVideoOpen}
                 onClose={() => setIsVideoOpen(false)}

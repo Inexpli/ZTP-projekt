@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
         >
             <div className={styles.inner}>
                 <button className={styles.logo} onClick={() => navigate('/')}>
-                    <span className={styles.logoIcon}>🎬</span>
+                    <span className={styles.logoIcon}>đźŽ¬</span>
                     <span className={styles.logoText}>CineRent</span>
                 </button>
 
@@ -51,13 +51,12 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                         className={`${styles.link} ${location.pathname === '/rentals' ? styles.active : ''}`}
                         onClick={() => navigate('/rentals')}
                     >
-                        Moje wypożyczenia
+                        Moje wypoĹĽyczenia
                     </button>
                 </div>
 
                 <div className={styles.actions}>
-                    {/* Ikona koszyka — liczba aktywnych wypożyczeń */}
-                    <button className={styles.iconBtn} onClick={onCartClick} title="Moje wypożyczenia">
+                    <button className={styles.iconBtn} onClick={onCartClick} title="Moje wypoĹĽyczenia">
                         <svg width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                             <line x1="3" y1="6" x2="21" y2="6" />
@@ -75,7 +74,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                         )}
                     </button>
 
-                    {/* Menu użytkownika */}
                     <div className={styles.userMenu}>
                         <button
                             className={styles.iconBtn}
@@ -113,13 +111,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount = 0, onCartClick }) => {
                                     className={styles.dropdownItem}
                                     onClick={() => { setMenuOpen(false); navigate('/rentals'); }}
                                 >
-                                    Moje wypożyczenia
+                                    Moje wypoĹĽyczenia
                                 </button>
                                 <button
                                     className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
                                     onClick={handleLogout}
                                 >
-                                    Wyloguj się
+                                    Wyloguj siÄ™
                                 </button>
                             </motion.div>
                         )}

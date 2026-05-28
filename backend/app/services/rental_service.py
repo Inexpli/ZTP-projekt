@@ -1,4 +1,4 @@
-from app.repositories.rental_repository import RentalRepository
+﻿from app.repositories.rental_repository import RentalRepository
 from app.repositories.movie_repository import MovieRepository
 from app.messaging.event_outbox import enqueue_event
 
@@ -7,17 +7,14 @@ movie_repo = MovieRepository()
 
 
 def rent_movie(user_id, movie_id):
-    """Główna logika wypożyczenia filmu"""
-    # Sprawdź czy film istnieje
+    """GĹ‚Ăłwna logika wypoĹĽyczenia filmu"""
     movie = movie_repo.get_by_id(movie_id)
     if not movie:
         raise ValueError("Film nie istnieje")
 
-    # Sprawdź czy film jest dostępny
     if not rental_repo.is_movie_available(movie_id):
-        raise ValueError("Film jest aktualnie wypożyczony")
+        raise ValueError("Film jest aktualnie wypoĹĽyczony")
 
-    # Utwórz wypożyczenie
     rental = rental_repo.create_rental(user_id, movie_id, rental_days=14)
     rental_data = rental.serialize()
 
@@ -27,30 +24,29 @@ def rent_movie(user_id, movie_id):
 
 
 def get_my_active_rentals(user_id):
-    """Pobiera aktualne wypożyczenia i serializuje je z danymi filmów"""
+    """Pobiera aktualne wypoĹĽyczenia i serializuje je z danymi filmĂłw"""
     rentals = rental_repo.get_user_active_rentals(user_id)
     return [rental.serialize() for rental in rentals]
 
 
 def get_my_rental_history(user_id):
-    """Pobiera historię wypożyczeń i serializuje je z danymi filmów"""
+    """Pobiera historiÄ™ wypoĹĽyczeĹ„ i serializuje je z danymi filmĂłw"""
     rentals = rental_repo.get_user_rental_history(user_id)
     return [rental.serialize() for rental in rentals]
 
 
 def return_movie(rental_id, user_id):
-    """Zwrot filmu – z zabezpieczeniem przed błędami typów ID"""
+    """Zwrot filmu â€“ z zabezpieczeniem przed bĹ‚Ä™dami typĂłw ID"""
     rental = rental_repo.get_rental_by_id(rental_id)
 
     if not rental:
-        raise ValueError("Wypożyczenie nie istnieje")
+        raise ValueError("WypoĹĽyczenie nie istnieje")
 
-    # Używamy int(), bo ID z tokena JWT często przychodzi jako string
     if int(rental.user_id) != int(user_id):
-        raise ValueError("Nie masz uprawnień do zwrotu tego filmu")
+        raise ValueError("Nie masz uprawnieĹ„ do zwrotu tego filmu")
 
     if rental.return_date:
-        raise ValueError("Film został już zwrócony")
+        raise ValueError("Film zostaĹ‚ juĹĽ zwrĂłcony")
 
     success = rental_repo.return_rental(rental_id)
     if success:
@@ -60,5 +56,5 @@ def return_movie(rental_id, user_id):
 
 
 def is_movie_available(movie_id):
-    """Sprawdza dostępność filmu"""
+    """Sprawdza dostÄ™pnoĹ›Ä‡ filmu"""
     return rental_repo.is_movie_available(movie_id)

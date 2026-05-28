@@ -1,7 +1,6 @@
-import api from './api';
+﻿import api from './api';
 import { LoginResponse, User } from '../rental-v2/types/index';
 
-// POST /auth/register
 export const register = async (
     username: string,
     email: string,
@@ -15,7 +14,6 @@ export const register = async (
     return response.data;
 };
 
-// POST /auth/login
 export const login = async (
     username: string,
     password: string
@@ -24,14 +22,11 @@ export const login = async (
     return response.data;
 };
 
-// GET /auth/me
 export const getMe = async (): Promise<User> => {
     const response = await api.get('/auth/me');
     return response.data;
 };
 
-// PUT /auth/me
-// Zaktualizowano: usunięto first_name/last_name zgodnie ze zmianami w UserRepository
 export const updateMe = async (data: {
     username?: string;
     email?: string;
@@ -40,10 +35,6 @@ export const updateMe = async (data: {
     return response.data;
 };
 
-/**
- * Zmiana hasła aktualnie zalogowanego użytkownika
- * POST /auth/change-password
- */
 export const changePassword = async (
     oldPassword: string,
     newPassword: string

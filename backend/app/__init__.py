@@ -1,5 +1,4 @@
-# app/__init__.py
-from flask import Flask, jsonify
+﻿from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -28,7 +27,7 @@ def create_app():
     jwt_secret = os.environ.get("JWT_SECRET_KEY", "super-secret-key-zmien-to-w-produkcji-2026")
 
     app.config["JWT_SECRET_KEY"] = jwt_secret
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400  # 24h
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 86400
 
     CORS(
         app,
@@ -43,7 +42,6 @@ def create_app():
         },
     )
 
-    # ==================== INICJALIZACJA ROZSZERZEŃ ====================
     from app.extensions import db, migrate, jwt
 
     db.init_app(app)
@@ -57,9 +55,8 @@ def create_app():
             ensure_outbox_table()
         except Exception as exc:
             db.session.rollback()
-            app.logger.warning("Nie udało się zainicjalizować outbox_events: %s", exc)
+            app.logger.warning("Nie udaĹ‚o siÄ™ zainicjalizowaÄ‡ outbox_events: %s", exc)
 
-    # ==================== BLUEPRINTY ====================
     from app.routes.auth import auth_bp
     from app.routes.movies import movies_bp
     from app.routes.rentals import rentals_bp
@@ -70,20 +67,18 @@ def create_app():
     app.register_blueprint(rentals_bp, url_prefix="/api/rentals")
     app.register_blueprint(genres_bp, url_prefix="/api/genres")
 
-    # ==================== HANDLERY BŁĘDÓW JWT ====================
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return jsonify({"error": "Nieprawidłowy token", "message": str(error)}), 401
+        return jsonify({"error": "NieprawidĹ‚owy token", "message": str(error)}), 401
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        return jsonify({"error": "Token wygasł", "message": "Zaloguj się ponownie"}), 401
+        return jsonify({"error": "Token wygasĹ‚", "message": "Zaloguj siÄ™ ponownie"}), 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
         return jsonify({"error": "Brak tokenu", "message": "Wymagana autoryzacja"}), 401
 
-    # ==================== GLOBALNE HANDLERY BŁĘDÓW ====================
     @app.errorhandler(404)
     def not_found_error(error):
         return jsonify({"error": "Nie znaleziono zasobu (404)"}), 404
@@ -91,9 +86,8 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
-        return jsonify({"error": "Błąd wewnętrzny serwera (500)"}), 500
+        return jsonify({"error": "BĹ‚Ä…d wewnÄ™trzny serwera (500)"}), 500
 
-    # ==================== LOGI STARTOWE ====================
-    app.logger.info("✅ Aplikacja uruchomiona – API gotowe.")
+    app.logger.info("âś… Aplikacja uruchomiona â€“ API gotowe.")
 
     return app

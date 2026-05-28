@@ -1,4 +1,4 @@
-from app.extensions import db
+﻿from app.extensions import db
 from app.models.rental import Rental
 from datetime import datetime, timedelta
 from sqlalchemy import and_
@@ -10,7 +10,7 @@ class RentalRepository:
         self.session = db.session
 
     def create_rental(self, user_id, movie_id, rental_days=14):
-        """Tworzy nowe wypożyczenie"""
+        """Tworzy nowe wypoĹĽyczenie"""
         due_date = datetime.utcnow() + timedelta(days=rental_days)
 
         rental = Rental(user_id=user_id, movie_id=movie_id, due_date=due_date)
@@ -19,31 +19,31 @@ class RentalRepository:
         return rental
 
     def get_user_active_rentals(self, user_id):
-        """Zwraca aktualne (nieoddane) wypożyczenia użytkownika wraz z danymi filmów"""
+        """Zwraca aktualne (nieoddane) wypoĹĽyczenia uĹĽytkownika wraz z danymi filmĂłw"""
         return (
             self.session.query(Rental)
-            .options(joinedload(Rental.movie))  # Dociąga dane filmu (title, poster_url)
+            .options(joinedload(Rental.movie))
             .filter(Rental.user_id == user_id, Rental.return_date == None)
             .order_by(Rental.due_date.asc())
             .all()
         )
 
     def get_user_rental_history(self, user_id):
-        """Zwraca całą historię wypożyczeń użytkownika wraz z danymi filmów"""
+        """Zwraca caĹ‚Ä… historiÄ™ wypoĹĽyczeĹ„ uĹĽytkownika wraz z danymi filmĂłw"""
         return (
             self.session.query(Rental)
-            .options(joinedload(Rental.movie))  # Dociąga dane filmu (title, poster_url)
+            .options(joinedload(Rental.movie))
             .filter(Rental.user_id == user_id)
             .order_by(Rental.rental_date.desc())
             .all()
         )
 
     def get_rental_by_id(self, rental_id):
-        """Pobiera konkretne wypożyczenie po ID"""
+        """Pobiera konkretne wypoĹĽyczenie po ID"""
         return self.session.query(Rental).get(rental_id)
 
     def return_rental(self, rental_id):
-        """Zaznacza film jako zwrócony"""
+        """Zaznacza film jako zwrĂłcony"""
         rental = self.get_rental_by_id(rental_id)
         if rental and not rental.return_date:
             rental.return_date = datetime.utcnow()
@@ -52,7 +52,7 @@ class RentalRepository:
         return False
 
     def is_movie_available(self, movie_id):
-        """Sprawdza czy film jest dostępny do wypożyczenia"""
+        """Sprawdza czy film jest dostÄ™pny do wypoĹĽyczenia"""
         active_rental = (
             self.session.query(Rental)
             .filter(Rental.movie_id == movie_id, Rental.return_date == None)
@@ -61,7 +61,7 @@ class RentalRepository:
         return active_rental is None
 
     def get_overdue_rentals(self):
-        """Zwraca wszystkie przeterminowane wypożyczenia"""
+        """Zwraca wszystkie przeterminowane wypoĹĽyczenia"""
         now = datetime.utcnow()
         return (
             self.session.query(Rental)

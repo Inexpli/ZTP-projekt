@@ -67,3 +67,10 @@ docker compose up -d
 
 docker compose logs -f # Logi
 ```
+
+## 6. Dokumentacja techniczna
+
+Szczegoly architektury kontenerow i przeplywu zdarzen sa opisane w:
+
+* `docs/ARCHITEKTURA.md`
+* `docs/TESTY_API.md`

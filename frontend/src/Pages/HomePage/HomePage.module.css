@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
 
 :root {
     --gold: #d4a350;
@@ -17,7 +17,6 @@
     font-family: 'Karla', sans-serif;
 }
 
-/* ─── Hero ─── */
 .hero {
     position: relative;
     height: 100vh;
@@ -191,7 +190,6 @@
     transform: translateY(-2px);
 }
 
-/* ─── Toast ─── */
 .toast {
     position: fixed;
     top: 90px;
@@ -238,7 +236,6 @@
     color: #e08080;
 }
 
-/* ─── Catalog ─── */
 .catalog {
     padding: 60px 0 80px;
 }
@@ -328,14 +325,12 @@
     color: rgba(235, 225, 205, 0.7);
 }
 
-/* ─── Grid ─── */
 .moviesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
     gap: 20px;
 }
 
-/* ─── Skeleton ─── */
 .skeletonGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
@@ -390,7 +385,6 @@
     }
 }
 
-/* ─── States ─── */
 .errorState,
 .emptyState {
     text-align: center;
@@ -423,7 +417,6 @@
     background: rgba(212, 163, 80, 0.18);
 }
 
-/* ─── Pagination ─── */
 .pagination {
     display: flex;
     align-items: center;
@@ -463,20 +456,17 @@
     text-align: center;
 }
 
-/* ─── Filtry Gatunków ─── */
 .genreFilters {
     display: flex;
     gap: 10px;
     margin-bottom: 32px;
     overflow-x: auto;
     padding: 4px 0 12px;
-    /* Ukrywanie scrollbara przy zachowaniu funkcjonalności */
     -ms-overflow-style: none;
     scrollbar-width: thin;
     scrollbar-color: var(--gold) transparent;
 }
 
-/* Stylizacja scrollbara dla Chrome/Safari/Edge */
 .genreFilters::-webkit-scrollbar {
     height: 4px;
 }
@@ -519,7 +509,6 @@
     box-shadow: 0 4px 15px rgba(212, 163, 80, 0.15);
 }
 
-/* ─── Dodatki do Hero ─── */
 .heroGenres {
     display: flex;
     gap: 6px;
@@ -539,7 +528,6 @@
     padding: 3px 9px;
 }
 
-/* ─── Responsywność ─── */
 @media (max-width: 768px) {
     .heroContent {
         padding: 0 20px 60px;

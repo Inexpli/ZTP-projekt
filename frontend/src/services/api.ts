@@ -1,6 +1,5 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
-// Zmień na URL swojego backendu
 export const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
@@ -8,7 +7,6 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Dołącz JWT token do każdego żądania (jeśli istnieje)
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
@@ -20,7 +18,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Obsługa 401 — wylogowanie przy wygasłym tokenie
 api.interceptors.response.use(
     (response) => response,
     (error) => {

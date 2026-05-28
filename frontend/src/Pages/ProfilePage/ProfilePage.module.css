@@ -1,5 +1,4 @@
-/* ProfilePage.module.css */
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
 
 .container {
     background: #08080c;
@@ -10,7 +9,6 @@
 
 .content {
     max-width: 600px;
-    /* Nieco węższy niż rentals dla lepszej czytelności formularza */
     margin: 0 auto;
     padding: 120px 40px 80px;
 }
@@ -40,7 +38,6 @@
     padding-bottom: 10px;
 }
 
-/* ─── Formularz ─── */
 .form {
     display: flex;
     flex-direction: column;
@@ -79,7 +76,6 @@
     box-shadow: 0 0 15px rgba(212, 163, 80, 0.05);
 }
 
-/* ─── Statusy (Toast-style) ─── */
 .status {
     padding: 12px 16px;
     border-radius: 10px;
@@ -113,7 +109,6 @@
     color: #c84646;
 }
 
-/* ─── Przyciski ─── */
 .saveBtn {
     background: rgba(212, 163, 80, 0.1);
     border: 1px solid rgba(212, 163, 80, 0.25);

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Karla:wght@300;400;500;600;700&display=swap');
 
 .page {
     background: #08080c;
@@ -13,7 +13,6 @@
     padding: 120px 40px 80px;
 }
 
-/* ─── Toast ─── */
 .toast {
     position: fixed;
     top: 90px;
@@ -47,7 +46,6 @@
     color: #6dc96d;
 }
 
-/* ─── Header ─── */
 .header {
     display: flex;
     align-items: flex-end;
@@ -91,7 +89,6 @@
     border-color: rgba(212, 163, 80, 0.45);
 }
 
-/* ─── Stats ─── */
 .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -132,7 +129,6 @@
     color: rgba(235, 225, 205, 0.35);
 }
 
-/* ─── Tabs ─── */
 .tabs {
     display: flex;
     gap: 4px;
@@ -180,7 +176,6 @@
     justify-content: center;
 }
 
-/* ─── Skeleton ─── */
 .skeletonList {
     display: flex;
     flex-direction: column;
@@ -201,7 +196,6 @@
     to { background-position: -200% 0; }
 }
 
-/* ─── Empty / Error ─── */
 .emptyState, .errorState {
     text-align: center;
     padding: 70px 20px;
@@ -243,7 +237,6 @@
     background: rgba(212, 163, 80, 0.17);
 }
 
-/* ─── Rental Cards ─── */
 .rentalsList {
     display: flex;
     flex-direction: column;
@@ -356,7 +349,6 @@
 .overdueText { color: #c84646; }
 .dueSoonText { color: #d4a350; }
 
-/* ─── Right column ─── */
 .rentalRight {
     display: flex;
     flex-direction: column;

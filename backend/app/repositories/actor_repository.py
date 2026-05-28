@@ -1,4 +1,4 @@
-from app.extensions import db
+﻿from app.extensions import db
 from app.models.actor import Actor
 from app.models.movie_actor import MovieActor
 from sqlalchemy import or_
@@ -73,7 +73,6 @@ class ActorRepository:
             return True
         return False
 
-    # ─── Role ──────────────────────────────────────────────────────────────
     def add_to_movie(self, movie_id, actor_id, role=None):
         existing = self.session.query(MovieActor).filter_by(
             movie_id=movie_id, actor_id=actor_id

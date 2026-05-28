@@ -1,4 +1,4 @@
-.overlay {
+﻿.overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -78,7 +78,6 @@
 .videoContainer {
     position: relative;
     padding-bottom: 56.25%;
-    /* 16:9 */
     height: 0;
     background: #000;
 }

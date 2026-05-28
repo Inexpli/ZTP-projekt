@@ -1,8 +1,5 @@
-services:
+﻿services:
 
-  # ─────────────────────────────────────────────────────────────────────────
-  # PostgreSQL
-  # ─────────────────────────────────────────────────────────────────────────
   db:
     image: postgres:17-alpine
     container_name: cinerent_db
@@ -23,9 +20,6 @@ services:
       retries: 5
       start_period: 120s
 
-  # ─────────────────────────────────────────────────────────────────────────
-  # Backend (Flask + Gunicorn)
-  # ─────────────────────────────────────────────────────────────────────────
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: cinerent_rabbitmq
@@ -69,9 +63,6 @@ services:
     expose:
       - "5000"        
 
-  # ─────────────────────────────────────────────────────────────────────────
-  # Frontend (React → Nginx)
-  # ─────────────────────────────────────────────────────────────────────────
   notification-service:
     build:
       context: ./notification-service
@@ -166,9 +157,6 @@ services:
     networks:
       - cinerent_net
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Volumes i sieci
-# ─────────────────────────────────────────────────────────────────────────────
   consul:
     image: hashicorp/consul:1.18
     container_name: cinerent_consul

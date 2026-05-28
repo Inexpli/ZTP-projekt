@@ -1,4 +1,4 @@
-.card {
+﻿.card {
     background: #0f0f17;
     border-radius: 14px;
     overflow: hidden;
@@ -135,7 +135,6 @@
     flex: 1;
 }
 
-/* Sekcja gatunków */
 .genres {
     display: flex;
     flex-wrap: wrap;

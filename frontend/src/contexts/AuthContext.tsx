@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../rental-v2/types/index';
 import * as authService from '../services/authService';
 
@@ -16,7 +16,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Przywróć sesję z localStorage przy starcie
     useEffect(() => {
         const restoreSession = async () => {
             const token = localStorage.getItem('access_token');
@@ -24,11 +23,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             if (token && storedUser) {
                 try {
-                    // Zweryfikuj token odpytując /auth/me
                     const freshUser = await authService.getMe();
                     setUser(freshUser);
                 } catch {
-                    // Token nieważny — wyczyść
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('user');
                 }

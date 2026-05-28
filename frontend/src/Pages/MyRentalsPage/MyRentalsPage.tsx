@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
@@ -19,7 +19,6 @@ const MyRentalsPage: React.FC = () => {
     const [toast, setToast] = useState('');
     const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
 
-    // ─── Ładuj wypożyczenia ────────────────────────────────────────────────
     const fetchRentals = useCallback(async () => {
         setLoading(true);
         setError('');
@@ -31,7 +30,6 @@ const MyRentalsPage: React.FC = () => {
 
             setActiveRentals(activeRes.rentals);
 
-            // Filtrujemy historię, aby nie pokazywać tych, które są jeszcze aktywne
             const activeIds = new Set(activeRes.rentals.map(r => r.rental_id));
             const pureHistory = historyRes.rentals.filter(r => !activeIds.has(r.rental_id));
             setHistoryRentals(pureHistory);
@@ -39,7 +37,7 @@ const MyRentalsPage: React.FC = () => {
             if (err.response?.status === 401) {
                 navigate('/login');
             } else {
-                setError('Nie udało się załadować listy wypożyczeń. Spróbuj ponownie później.');
+                setError('Nie udaĹ‚o siÄ™ zaĹ‚adowaÄ‡ listy wypoĹĽyczeĹ„. SprĂłbuj ponownie pĂłĹşniej.');
             }
         } finally {
             setLoading(false);
@@ -50,13 +48,11 @@ const MyRentalsPage: React.FC = () => {
         fetchRentals();
     }, [fetchRentals]);
 
-    // ─── Zwrot filmu ───────────────────────────────────────────────────────
     const handleReturn = async (rental: Rental) => {
         setReturningId(rental.rental_id);
         try {
             await rentalService.returnRental(rental.rental_id);
 
-            // Sukces: Przenieś lokalnie z aktywnych do historii, aby uniknąć zbędnego zapytania GET
             const now = new Date().toISOString();
             const returnedRental = {
                 ...rental,
@@ -67,9 +63,9 @@ const MyRentalsPage: React.FC = () => {
             setActiveRentals(prev => prev.filter(r => r.rental_id !== rental.rental_id));
             setHistoryRentals(prev => [returnedRental, ...prev]);
 
-            showToast(`„${rental.movie_title}" został zwrócony pomyślnie.`);
+            showToast(`â€ž${rental.movie_title}" zostaĹ‚ zwrĂłcony pomyĹ›lnie.`);
         } catch (err: any) {
-            const serverError = err.response?.data?.error || 'Błąd podczas zwrotu filmu.';
+            const serverError = err.response?.data?.error || 'BĹ‚Ä…d podczas zwrotu filmu.';
             showToast(serverError);
         } finally {
             setReturningId(null);
@@ -81,11 +77,10 @@ const MyRentalsPage: React.FC = () => {
         setTimeout(() => setToast(''), 4000);
     };
 
-    // ─── Helpers ───────────────────────────────────────────────────────────
     const getDaysLeft = (dueDate: string) => {
         const due = new Date(dueDate);
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Porównujemy tylko daty bez godzin
+        today.setHours(0, 0, 0, 0);
         return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     };
 
@@ -106,7 +101,6 @@ const MyRentalsPage: React.FC = () => {
         <div className={styles.page}>
             <Navbar cartCount={0} onCartClick={() => { }} />
 
-            {/* Powiadomienia (Toast) */}
             <AnimatePresence>
                 {toast && (
                     <motion.div
@@ -115,29 +109,27 @@ const MyRentalsPage: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -60 }}
                     >
-                        <span className={styles.toastIcon}>✓</span>
+                        <span className={styles.toastIcon}>âś“</span>
                         {toast}
                     </motion.div>
                 )}
             </AnimatePresence>
 
             <div className={styles.container}>
-                {/* Nagłówek sekcji */}
                 <motion.div
                     className={styles.header}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
                     <div>
-                        <h1 className={styles.title}>Moje wypożyczenia</h1>
-                        <p className={styles.subtitle}>Przeglądaj swoje aktywne filmy i historię</p>
+                        <h1 className={styles.title}>Moje wypoĹĽyczenia</h1>
+                        <p className={styles.subtitle}>PrzeglÄ…daj swoje aktywne filmy i historiÄ™</p>
                     </div>
                     <button className={styles.browseBtn} onClick={() => navigate('/')}>
-                        Przeglądaj katalog
+                        PrzeglÄ…daj katalog
                     </button>
                 </motion.div>
 
-                {/* Statystyki górne */}
                 {!loading && (
                     <div className={styles.stats}>
                         <div className={`${styles.statCard} ${styles.statCardAccent}`}>
@@ -151,7 +143,6 @@ const MyRentalsPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Przełącznik zakładek */}
                 <div className={styles.tabs}>
                     <button
                         className={`${styles.tab} ${activeTab === 'active' ? styles.tabActive : ''}`}
@@ -166,11 +157,10 @@ const MyRentalsPage: React.FC = () => {
                         className={`${styles.tab} ${activeTab === 'history' ? styles.tabActive : ''}`}
                         onClick={() => setActiveTab('history')}
                     >
-                        Historia zwrotów
+                        Historia zwrotĂłw
                     </button>
                 </div>
 
-                {/* Główna lista */}
                 {loading ? (
                     <div className={styles.skeletonList}>
                         {[1, 2, 3].map(i => <div key={i} className={styles.skeletonCard} />)}
@@ -178,7 +168,7 @@ const MyRentalsPage: React.FC = () => {
                 ) : error ? (
                     <div className={styles.errorState}>
                         <p>{error}</p>
-                        <button className={styles.retryBtn} onClick={fetchRentals}>Odśwież</button>
+                        <button className={styles.retryBtn} onClick={fetchRentals}>OdĹ›wieĹĽ</button>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
@@ -191,9 +181,9 @@ const MyRentalsPage: React.FC = () => {
                         >
                             {displayed.length === 0 ? (
                                 <div className={styles.emptyState}>
-                                    <span className={styles.emptyIcon}>🍿</span>
-                                    <p>{activeTab === 'active' ? 'Nie masz obecnie żadnych wypożyczonych filmów.' : 'Twoja historia jest pusta.'}</p>
-                                    <button className={styles.emptyBtn} onClick={() => navigate('/')}>Wypożycz coś teraz</button>
+                                    <span className={styles.emptyIcon}>đźŤż</span>
+                                    <p>{activeTab === 'active' ? 'Nie masz obecnie ĹĽadnych wypoĹĽyczonych filmĂłw.' : 'Twoja historia jest pusta.'}</p>
+                                    <button className={styles.emptyBtn} onClick={() => navigate('/')}>WypoĹĽycz coĹ› teraz</button>
                                 </div>
                             ) : (
                                 <div className={styles.rentalsList}>
@@ -210,7 +200,6 @@ const MyRentalsPage: React.FC = () => {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: i * 0.05 }}
                                             >
-                                                {/* Plakat filmu */}
                                                 <div className={styles.rentalPoster} onClick={() => navigate(`/movie/${rental.movie_id}`)}>
                                                     {rental.poster_url && !imgErrors[rental.rental_id] ? (
                                                         <img
@@ -220,11 +209,10 @@ const MyRentalsPage: React.FC = () => {
                                                             onError={() => setImgErrors(p => ({ ...p, [rental.rental_id]: true }))}
                                                         />
                                                     ) : (
-                                                        <div className={styles.posterFallback}>🎬</div>
+                                                        <div className={styles.posterFallback}>đźŽ¬</div>
                                                     )}
                                                 </div>
 
-                                                {/* Detale wypożyczenia */}
                                                 <div className={styles.rentalInfo}>
                                                     <h3 className={styles.rentalTitle} onClick={() => navigate(`/movie/${rental.movie_id}`)}>
                                                         {rental.movie_title}
@@ -232,7 +220,7 @@ const MyRentalsPage: React.FC = () => {
 
                                                     <div className={styles.rentalDates}>
                                                         <div className={styles.dateBlock}>
-                                                            <span className={styles.dateLabel}>Data wypożyczenia</span>
+                                                            <span className={styles.dateLabel}>Data wypoĹĽyczenia</span>
                                                             <span className={styles.dateValue}>{formatDate(rental.rental_date)}</span>
                                                         </div>
                                                         <div className={styles.dateBlock}>
@@ -246,10 +234,9 @@ const MyRentalsPage: React.FC = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Status i akcja zwrotu */}
                                                 <div className={styles.rentalRight}>
                                                     {rental.return_date ? (
-                                                        <span className={styles.returnedBadge}>✓ Zwrócony</span>
+                                                        <span className={styles.returnedBadge}>âś“ ZwrĂłcony</span>
                                                     ) : (
                                                         <div className={styles.activeActions}>
                                                             {isOverdue && <span className={styles.overdueBadge}>Po terminie!</span>}
@@ -258,7 +245,7 @@ const MyRentalsPage: React.FC = () => {
                                                                 onClick={() => handleReturn(rental)}
                                                                 disabled={returningId === rental.rental_id}
                                                             >
-                                                                {returningId === rental.rental_id ? 'Przetwarzanie...' : 'Zwróć teraz'}
+                                                                {returningId === rental.rental_id ? 'Przetwarzanie...' : 'ZwrĂłÄ‡ teraz'}
                                                             </button>
                                                         </div>
                                                     )}

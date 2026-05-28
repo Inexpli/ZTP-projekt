@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+﻿from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services.rental_service import (
     rent_movie,
@@ -11,7 +11,6 @@ from app.services.rental_service import (
 rentals_bp = Blueprint("rentals", __name__)
 
 
-# Wypożycz film
 @rentals_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_rental():
@@ -23,15 +22,14 @@ def create_rental():
             return jsonify({"error": "Brak movie_id"}), 400
 
         rental = rent_movie(user_id, data["movie_id"])
-        return jsonify({"message": "Film wypożyczony pomyślnie", "rental": rental}), 201
+        return jsonify({"message": "Film wypoĹĽyczony pomyĹ›lnie", "rental": rental}), 201
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": "Błąd podczas wypożyczania filmu"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas wypoĹĽyczania filmu"}), 500
 
 
-# Moje aktualne wypożyczenia
 @rentals_bp.route("/my", methods=["GET"])
 @jwt_required()
 def my_active_rentals():
@@ -40,7 +38,6 @@ def my_active_rentals():
     return jsonify({"rentals": rentals}), 200
 
 
-# Historia moich wypożyczeń
 @rentals_bp.route("/history", methods=["GET"])
 @jwt_required()
 def my_rental_history():
@@ -49,7 +46,6 @@ def my_rental_history():
     return jsonify({"rentals": rentals}), 200
 
 
-# Zwrot filmu
 @rentals_bp.route("/<int:rental_id>/return", methods=["POST"])
 @jwt_required()
 def return_rental(rental_id):
@@ -58,17 +54,16 @@ def return_rental(rental_id):
         success = return_movie(rental_id, user_id)
 
         if success:
-            return jsonify({"message": "Film został pomyślnie zwrócony"}), 200
+            return jsonify({"message": "Film zostaĹ‚ pomyĹ›lnie zwrĂłcony"}), 200
         else:
-            return jsonify({"error": "Nie udało się zwrócić filmu"}), 400
+            return jsonify({"error": "Nie udaĹ‚o siÄ™ zwrĂłciÄ‡ filmu"}), 400
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": "Błąd podczas zwrotu filmu"}), 500
+        return jsonify({"error": "BĹ‚Ä…d podczas zwrotu filmu"}), 500
 
 
-# Sprawdź dostępność filmu (przydatne dla frontendu)
 @rentals_bp.route("/check/<int:movie_id>", methods=["GET"])
 def check_availability(movie_id):
     available = is_movie_available(movie_id)
